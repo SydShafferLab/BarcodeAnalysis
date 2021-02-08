@@ -1,3 +1,5 @@
+# this script is originally written by ben emert and was taken from: https://github.com/arjunrajlaboratory/timemachine
+
 #Script to parse timeMachine 100bp barcodes from single end FASTQ files off NextSeq.
 #Requires the following python packages: Biopython, regex.
 
@@ -16,19 +18,19 @@ from extractionFun import *
 parser = ArgumentParser()
 #parser.add_argument("experiment", help = "Specify the path to the experiment directory")
 parser.add_argument("sampleName", help = "Specify the name of sample directory containing the fastq.gz files")
-parser.add_argument("-o", "--outFilePrefix", help = "Specify the output file prefix for table of barcodes and UMIs. If none specified, will use sampleDirectory") 
+parser.add_argument("-o", "--outFilePrefix", help = "Specify the output file prefix for table of barcodes and UMIs. If none specified, will use sampleDirectory")
 parser.add_argument("-s", "--stagger", help = "Specify the length of the stagger.", type=int, default = 0)
 parser.add_argument("-r", "--includeReads", help = "If specified, output additional tables with barcodes and only read counts or UMI counts. Otherwise outputs only one table with both counts", action = 'store_true')
-parser.add_argument("--check_vector", help = "Option to check vector sequence before or on both sides of the barcode sequence.", default = "both", choices = ["both", "before"]) 
-parser.add_argument("-l", "--length", help = "If check_vector before specified, input here your desired barcode length. Default is 100", default = 100, type = int) 
-parser.add_argument("-Q", "--minPhred", help = "Specify the minimum phredscore required to include a readout. Filters reads with more than 5 bases before the barcode with low phredscore.", default = 14, type = int) 
+parser.add_argument("--check_vector", help = "Option to check vector sequence before or on both sides of the barcode sequence.", default = "both", choices = ["both", "before"])
+parser.add_argument("-l", "--length", help = "If check_vector before specified, input here your desired barcode length. Default is 100", default = 100, type = int)
+parser.add_argument("-Q", "--minPhred", help = "Specify the minimum phredscore required to include a readout. Filters reads with more than 5 bases before the barcode with low phredscore.", default = 14, type = int)
 parser.add_argument("-e", "--excludedReads", help = "If specified, output txt.gz files containing reads excluded from the UMI and count files.", action = 'store_true')
 args = parser.parse_args()
 
 experimentDirectory = os.getcwd()
 
 #Make directory for output files.
-outFileDirectory = os.path.join(experimentDirectory, "analyzed", args.sampleName, 'extractedBarcodeData') 
+outFileDirectory = os.path.join(experimentDirectory, "analyzed", args.sampleName, 'extractedBarcodeData')
 if not os.path.exists(outFileDirectory):
 	os.makedirs(outFileDirectory)
 
@@ -55,7 +57,7 @@ outFileBadPhred = outFilePrefix + "_badPhred.gz"
 staggerLength = args.stagger
 minPhred = args.minPhred
 
-#Move to sample directory 
+#Move to sample directory
 os.chdir(os.path.join(experimentDirectory, "raw", args.sampleName))
 
 print "Parsing sample {}".format(args.sampleName)
@@ -64,7 +66,7 @@ if args.check_vector == "both":
 	barcode_dict, missingBeforeBarcode, missingAfterBarcode, badQscore, badLength = parseBarcodeFastQ_both(inFileNames, args.stagger, minPhred)
 elif args.check_vector == "before":
 	barcode_dict, missingBeforeBarcode, badQscore, badLength = parseBarcodeFastQ_before(inFileNames, args.stagger, args.length, minPhred)
-print "Finished parsing sample {}. Length of dictionary is {}".format(args.sampleName, len(barcode_dict))  
+print "Finished parsing sample {}. Length of dictionary is {}".format(args.sampleName, len(barcode_dict))
 print "Number of reads missing sequence before barcode is {}".format(len(missingBeforeBarcode))
 
 if args.check_vector == "both":
@@ -72,9 +74,9 @@ if args.check_vector == "both":
 
 
 
-#Write out barcode and associated phredscore and UMIs to file. 
+#Write out barcode and associated phredscore and UMIs to file.
 os.chdir(outFileDirectory)
-writeOutFileUMIs(barcode_dict, outFileUMI)             
+writeOutFileUMIs(barcode_dict, outFileUMI)
 print "Finished writing barcode UMIs to file"
 
 if args.excludedReads == True:
@@ -84,17 +86,16 @@ if args.excludedReads == True:
 	writeOutFileBadSeqRecord(badLength, outFileBadLength)
 	if args.check_vector == "both":
 		writeOutFileBadSeqRecord(missingAfterBarcode, outFileMissingAfterBarcode)
-    
-print "Counting barcode UMIs"      
-barcode_counts_dict = countUMIs(barcode_dict)                  
-print "Finishing counting barcode UMIs. Length of dictionary:"  
+
+print "Counting barcode UMIs"
+barcode_counts_dict = countUMIs(barcode_dict)
+print "Finishing counting barcode UMIs. Length of dictionary:"
 print str(len(barcode_counts_dict))
-    
-#Write out barcode and associated read/UMI counts to file. 
+
+#Write out barcode and associated read/UMI counts to file.
 if args.includeReads:
 	writeOutFileBarcodeUMICounts(barcode_counts_dict,outFileUMICounts)
 	writeOutFileBarcodeCounts(barcode_counts_dict, outFileCounts)
 	writeOutFileBarcodeReadCounts(barcode_counts_dict, outFileReadCounts)
 else:
 	writeOutFileBarcodeCounts(barcode_counts_dict, outFileCounts)
-    

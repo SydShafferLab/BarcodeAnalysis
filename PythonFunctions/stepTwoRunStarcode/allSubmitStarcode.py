@@ -1,3 +1,4 @@
+# this script is originally written by ben emert and was taken from: https://github.com/arjunrajlaboratory/timemachine
 from argparse import ArgumentParser
 import os, sys
 import glob
@@ -5,10 +6,10 @@ import subprocess
 
 parser = ArgumentParser()
 parser.add_argument("experiment", help = "Specify the path to the experiment directory")
-parser.add_argument("-d", "--distance", help = "Specify the Levenshtein distance for clustering/merging sequences", type = str, default = 8) 
+parser.add_argument("-d", "--distance", help = "Specify the Levenshtein distance for clustering/merging sequences", type = str, default = 8)
 parser.add_argument("--check_vector",  help = "Were full length barcodes extracted based on the vector sequence before and after the barcode, or only before?", default = "both", choices = ["both", "before"])
 parser.add_argument("-c", "--countType", help = "Specify whether to use read counts or UMI counts", default = "Reads", choices = ["Reads", "UMIs"])
-parser.add_argument("-r", "--clusterRatio", help = "Specify the minimum count ratio to cluster sequences within specified distance. Default is 5", type = str, default = 5)    
+parser.add_argument("-r", "--clusterRatio", help = "Specify the minimum count ratio to cluster sequences within specified distance. Default is 5", type = str, default = 5)
 args = parser.parse_args()
 
 starcodeScriptPath = "/project/arjunrajlab/timeMachine/repo/barcodeAnalysisScripts/stepTwoRunStarcode/submitStarcode.py"

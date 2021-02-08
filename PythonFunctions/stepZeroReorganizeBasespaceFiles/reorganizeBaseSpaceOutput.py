@@ -1,3 +1,4 @@
+# this script is originally written by ben emert and was taken from: https://github.com/arjunrajlaboratory/timemachine
 import os, glob, shutil, re
 from argparse import ArgumentParser
 
@@ -19,6 +20,4 @@ for sample in sampleNames:
 	for i in sampleLanes:
 		for file in glob.glob("{}/*.fastq.gz".format(i)):
 			shutil.move(file, "{}/".format(sample))
-		shutil.rmtree(i)	
-
-
+		shutil.rmtree(i)

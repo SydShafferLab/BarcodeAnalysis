@@ -1,6 +1,7 @@
-#Python script for selecting time machine barcodes and writing barcodes to fasta files. 
+# this script is originally written by ben emert and was taken from: https://github.com/arjunrajlaboratory/timemachine
+#Python script for selecting time machine barcodes and writing barcodes to fasta files.
 
-import os, glob 
+import os, glob
 import itertools
 import numpy as np
 import pandas as pd
@@ -27,19 +28,19 @@ args = parser.parse_args()
 def reverse_complement(sequence):
 	complement = {'A':'T', 'T': 'A', 'G':'C', 'C':'G', 'N':'N'}
 	reverseComplement = "".join([complement[base] for base in str(sequence)[::-1].upper()])
-	return reverseComplement     
+	return reverseComplement
 
 def writeToFasta(path, name, barcodeSeq):
-	"""Function for pandas dataframe to write a barcode sequence to fasta file using barcode rank for 
-	file name. BarcodeSeq should be a string of the entire barcode sequence. 
+	"""Function for pandas dataframe to write a barcode sequence to fasta file using barcode rank for
+	file name. BarcodeSeq should be a string of the entire barcode sequence.
 	"""
-	with open(os.path.join(path, "barcode{}.fa".format(name+1)), 'w') as fasta: #Make barcode file and start at 1 rather than 0. 
+	with open(os.path.join(path, "barcode{}.fa".format(name+1)), 'w') as fasta: #Make barcode file and start at 1 rather than 0.
 		fasta.write(">barcode{}\n".format(name+1))
 		fasta.write(barcodeSeq + "\n")
 
 def getMinHamming(barcodeSequence, maskSequence):
 	length = len(barcodeSequence)
-	maskSequenceList = [maskSequence[i:i+length] for i in xrange(0, len(maskSequence)-length + 1)] 
+	maskSequenceList = [maskSequence[i:i+length] for i in xrange(0, len(maskSequence)-length + 1)]
 	minHamming = min([Levenshtein.hamming(reverse_complement(barcodeSequence), j.upper()) for j in maskSequenceList])
 	return minHamming
 
@@ -58,13 +59,13 @@ if args.starcodeDistance is not None:
 else:
 	barcodeDataFrames = [pd.read_csv(i, names=["barcode", "reads", "UMIs"], sep = '\t') for i in countFiles]
 
-#Merge sample data frames if replicates. For simplicity, assumes there are only 2 samples to merge. Needs to be update to allow for more than 2 samples. 
+#Merge sample data frames if replicates. For simplicity, assumes there are only 2 samples to merge. Needs to be update to allow for more than 2 samples.
 if args.join == True:
 	barcodeDf = pd.merge(barcodeDataFrames[0], barcodeDataFrames[1], on = 'barcode')
 	if args.starcodeDistance is not None:
 		barcodeDf['counts'] = barcodeDf.counts_x + barcodeDf.counts_y
 		barcodeDf.drop(['counts_x', 'counts_y'], axis=1, inplace = True)
-	else:	
+	else:
 		barcodeDf['reads'] = barcodeDf.reads_x + barcodeDf.reads_y
 		barcodeDf['UMIs'] = barcodeDf.UMIs_x + barcodeDf.UMIs_y
 		barcodeDf.drop(['reads_x', 'reads_y', 'UMIs_x', 'UMIs_y'], axis=1, inplace = True)
@@ -78,7 +79,7 @@ else:
 	barcodeDftopN = barcodeDf.sort_values(by = args.countMetric, ascending = False).iloc[0:args.number]
 
 if args.mask is not None:
-	#read mask sequence file. 
+	#read mask sequence file.
 	with open(args.mask, 'r') as maskFile:
 		header = maskFile.readline().strip('\n')
 		maskSequence = maskFile.readline().strip('\n')
@@ -104,32 +105,16 @@ if args.extend is not None:
 
 if args.outFileName is not None:
 	outFilePrefix = args.outFileName
-else: 	
+else:
 	outFilePrefix = samples[0]
 
 if not os.path.exists("barcodeDesign/{}/fastaFiles/".format(outFilePrefix)):
-	os.makedirs("barcodeDesign/{}/fastaFiles/".format(outFilePrefix))       
+	os.makedirs("barcodeDesign/{}/fastaFiles/".format(outFilePrefix))
 
 if args.outputMasked == True:
 	if not os.path.exists("barcodeDesign/{}/fastaFiles/badMask/".format(outFilePrefix)):
-		os.makedirs("barcodeDesign/{}/fastaFiles/badMask/".format(outFilePrefix)) 
+		os.makedirs("barcodeDesign/{}/fastaFiles/badMask/".format(outFilePrefix))
 	barcodeDfkeep.apply(lambda x: writeToFasta("barcodeDesign/{}/fastaFiles/".format(outFilePrefix), x.name, x.reverse_complement), axis = 1)
 	barcodeDfdrop.apply(lambda x: writeToFasta("barcodeDesign/{}/fastaFiles/badMask/".format(outFilePrefix), x.name, x.reverse_complement), axis = 1)
 else:
 	barcodeDfkeep.apply(lambda x: writeToFasta("barcodeDesign/{}/fastaFiles/".format(outFilePrefix), x.name, x.reverse_complement), axis = 1)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
