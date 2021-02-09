@@ -1,6 +1,6 @@
 #/bin/bash
 
-#to run this simply log on to the consign PMACS server and run this line (replacing PATH with the path to this file): bsub -e Error.e -o Output.o sh /PATH/extract_barcode_pipeline.sh
+#to run this simply log on to the consign PMACS server and run this line (replacing PATH with the path to this file): bsub -e Error.e -o Output.o sh /PATH/ExtractBarcodePipeline.sh
 
 bsub -Is bash
 source $HOME/my_python/2.7.5/bin/activate
