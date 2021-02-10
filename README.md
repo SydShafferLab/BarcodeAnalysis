@@ -21,11 +21,13 @@ Based on which primers were used, we recommend specifying the number of "stagger
 
   2. to make this file simply have the first colum as sample names, and the second column as the stagger number for that sample and save this file as a .csv. The file "staggerfile.csv" included in this repository is an example of this file.
   3. For your fastq files, you should be able to download them from base space or get them as an output from bcl2fastq
-  4. Using cyberduck create a folder for this specific project on the cluster and upload your fastq files and the stagger file into that folder
-  5. In the same folder add a copy of the "ExtractBarcodePipeline.sh" file
-  6. open the copied "ExtractBarcodePipeline.sh" file by right clicking on it and selecting "edit with..." and select a program with which to edit the file (text edit is fine, but I prefer Atom:https://atom.io).
-  7. In this file edit the paths and parameters indicated under the line "########## Fill out these parameters ". for most applications you should not need to touch anyting under the line "######## End of user modulated parameters"
-  8. once you have adjusted all the parameters, save the file
+  4. Using cyberduck create a folder for this specific project on the cluster
+  5. to upload the stagger file you can simply drag and drop the file into the folder
+  6. to upload the fastq you can try and drag and drop, but this is usually too slow. A better way for large files is to write this command in terminal `rsync -rav /path/containing/fast1/files/ <username>@mercury.pmacs.upenn.edu:/path/to/project/folder` replacing with correct paths and your username. it will then prompt you for your PMACS password and allow you to start transfering
+  7. In the same project folder add a copy of the "ExtractBarcodePipeline.sh" file
+  8. open the copied "ExtractBarcodePipeline.sh" file by right clicking on it and selecting "edit with..." and select a program with which to edit the file (text edit is fine, but I prefer Atom:https://atom.io).
+  9. In this file edit the paths and parameters indicated under the line "########## Fill out these parameters ". for most applications you should not need to touch anyting under the line "######## End of user modulated parameters"
+  10. once you have adjusted all the parameters, save the file
   
   ## Running barcode detection
  1. Open a terminal window and sigh into your pmacs by running the line `ssh <username>@consign.pmacs.upenn.edu` (replacing <username> with your PMACS username) hit enter, and then enter your PMACS password and hit enter
