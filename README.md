@@ -19,7 +19,7 @@ NOTE: This repository is just mean to link existing packages (that I did not wri
 "If using our original Rewind vector and primers for library prep, then your sequencing templates will all contain the same sequence of DNA used for PCR priming. Unfortunately, on Illumina instruments, if all sequencing templates contain the same nucleotides at the same positions, this can create errors during sequencing or fail the run entirely. To mitigate this issue, each primer contains a different number of extra bases to stagger the primer region during sequencing (see timeMachineVectorPrimers.csv)
 Based on which primers were used, we recommend specifying the number of "stagger" bases expected for each sample in a stagger file. Otherwise, the default is to assume 0 stagger bases which may lead to reads containing true barcodes being filtered out and not counted."
 
-  2. to make this file simply have the first colum as sample names, and the second column as the stagger number for that sample and save this file as a .csv. The file "staggerfile.csv" included in this repository is an example of this file.
+  2. to make this file simply have the first colum as sample names, and the second column as the number of stagger bases on the i5 primer for that sample and save this file as a .csv. The file "staggerfile.csv" included in this repository is an example of this file.
   3. For your fastq files, you should be able to download them from base space or get them as an output from bcl2fastq
   4. Using cyberduck create a folder for this specific project on the cluster
   5. to upload the stagger file you can simply drag and drop the file into the folder
