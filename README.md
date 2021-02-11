@@ -6,10 +6,19 @@ NOTE: This repository is just mean to link existing packages (that I did not wri
 
 ## Setting up the environment (you should only need to do this once)
    All this code is run on the pmacs cluster as starcode is very memory intensive.
- 1. Get if you dont already have it I recoment you download cyberduck (https://cyberduck.io) to easily interface with the cluster
+ 1. If you dont already have it I recoment you download cyberduck (https://cyberduck.io) to easily interface with the cluster
  2. Once cyberduck is installed, open it, hit open connection, in the top drop down menu select "SFTP(SSH File Transfer Protocol)", for server type in "mercury.pmacs.upenn.edu", enter your PMACS username and password, and hit connect.
  3. Download all the files in this github repository by hitting the green "Code" button on the top right of this page
- 4. Drag and drop the downloaded file "BarcodeAnalysis-main" into cyberduck (this should cause it to download on your cluster home directory)
+ 4. Drag and drop the downloaded file "BarcodeAnalysis-main" into your home directory in cyberduck (for future steps to work without modification this needs ot be in you home directory, in cyberduck the drop down should read "/home/<username>")
+ 5. change the file name from "BarcodeAnalysis-main" to simply "BarcodeAnalysis"
+ 5. to set up the virutual enviroment containing the necessary dependencies, open up teminal and type in `<username>@mercury.pmacs.upenn.edu` reaplacing <username> with your PMACS username, and hit enter. Then enter your PMACS password and hit enter
+ 6. You should now be in a session on the terminal. to activate a note enter the line `bsub -Is bash`
+ 7. We will now make sure we are in the correct python version by entering `module load python/2.7.9`. If this worked you should be able to enter `python --version` and see the output `Python 2.7.9`
+ 8. enter `cd /home/<username>/BarcodeAnalysis/` replacing <username> with your PMACS username (this assumes you ). (tip: to get paths of folders I usually right click on them in cyberduck, select "copy URL", and select either choice, and keep everything after ".edu")
+ 9. now set up your virutual environment by entering the line `python -m virtualenv bcenv`
+ 10. next activate your virtual envrionment by entering `source /home/<username>/BarcodeAnalysis/bcenv/bin/activate`, replacing <username> with your PMACS username
+ 11. we can now install the necessary packages in this environment by running: `pip install -r /home/<username>/BarcodeAnalysis/requirements.txt`, replacing <username> with your PMACS username
+ 12. Your virtual environment is now ready. If you ever want to leave the virtual environment simply enter `deactivate`, everytime you want to active the environment enter `source /home/<username>/BarcodeAnalysis/bcenv/bin/activate`
 
 
 ## Preparing files
@@ -30,9 +39,10 @@ Based on which primers were used, we recommend specifying the number of "stagger
   10. once you have adjusted all the parameters, save the file
   
   ## Running barcode detection
- 1. Open a terminal window and sigh into your pmacs by running the line `ssh <username>@consign.pmacs.upenn.edu` (replacing <username> with your PMACS username) hit enter, and then enter your PMACS password and hit enter
+ 1. Open a terminal window and sign into your pmacs by running the line `ssh <username>@consign.pmacs.upenn.edu` (replacing <username> with your PMACS username) hit enter, and then enter your PMACS password and hit enter
  2. Now activate a node on the cluster by running the command `bsub -Is bash`
- 3. Next activate the line `bsub -e Error.e -o Output.o sh /PATH/ExtractBarcodePipeline.sh` replacing "PATH" with the correct directory to your edited ExtractBarcodePipeline.sh file wich should be in your project folder
+ 3. Next activate the line `bsub -e Error.e -o Output.o sh /PATH/ExtractBarcodePipeline.sh` replacing "PATH" with the correct directory to your edited ExtractBarcodePipeline.sh file wich should be in your project folder.
+ 4. the full barcode counting pipeling should now run without need for any more input.
 
 
 
