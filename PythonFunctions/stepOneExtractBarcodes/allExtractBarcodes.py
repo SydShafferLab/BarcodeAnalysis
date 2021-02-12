@@ -16,7 +16,7 @@ parser.add_argument("-Q", "--minPhred", help = "Specify the minimum phredscore r
 parser.add_argument("-e", "--excludedReads", help = "If specified, output txt.gz files containing reads excluded from the UMI and count files.", action = 'store_true')
 args = parser.parse_args()
 
-extractionScriptPath = "/project/arjunrajlab/timeMachine/repo/barcodeAnalysisScripts/stepOneExtractBarcodes/timeMachineParseFastQ150SEreads_v4.py"
+extractionScriptPath = os.environ.get('TM_scripts')+"/stepOneExtractBarcodes/timeMachineParseFastQ150SEreads_v4.py"
 #loadPythonEnvPath = '/barcodeAnalysisScripts/stepOneExtractBarcodes/set_python_pmacs_env'
 #additionalArguments = ["--includeReads", "--check_vector", "both", "--excludedReads"]
 

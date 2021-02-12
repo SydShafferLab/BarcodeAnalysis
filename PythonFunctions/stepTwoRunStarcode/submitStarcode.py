@@ -42,5 +42,4 @@ if not os.path.exists(outFileDirectory):
 samplePath = os.path.join(args.experiment, "analyzed", args.sampleName, 'extractedBarcodeData/{}_{}'.format(args.sampleName, countFileExtension))
 outfilePath = os.path.join(args.experiment, "analyzed", args.sampleName, 'starcode', '{}_clusteredBarcode{}_d{}.txt'.format(args.sampleName, args.countType, args.distance))
 starcodeCommand = ['starcode', '-d', args.distance, '-t', str(4), '-r', args.clusterRatio, '-i', samplePath, '-o', outfilePath]
-
 subprocess.call(starcodeCommand)
