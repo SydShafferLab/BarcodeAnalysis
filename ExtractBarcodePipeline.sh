@@ -80,6 +80,8 @@ fi
 
 python $TM_scripts/stepOneExtractBarcodes/allExtractBarcodes.py $project_folder/repo/ --staggerFile $staggerFile -r -l $length --check_vector $check_vector
 
+#give read write privlages to all files made
+chmod -R 775 $project_folder/
 
 ##Identify barcodes that are similar (differences likely due to PCR errors or sequencing) and count them as 1 barcode (Ben script step #2)
 
