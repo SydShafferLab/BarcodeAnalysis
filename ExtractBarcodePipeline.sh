@@ -10,14 +10,14 @@ bsub -Is bash
 scripts="/home/gharm/BarcodeAnalysis"
 
 # path to project folder (this should be a directory you make containing your Fastq files and your stagger file. Outputs will also go in this file)
-project_folder="/project/shafferslab/Guillaume/ToddBC3"
+project_folder="/project/shafferslab/Guillaume/ToddBC2"
 
 # path to fastq files
-fastq_path="/project/shafferslab/Guillaume/ToddBC3/FASTQ"
+fastq_path="/project/shafferslab/Guillaume/ToddBC2/FASTQ"
 
 #path to staggerfile
 ##the stagger file is a csv file containing 2 columns, the first column contains the sample name and the second contains the number of stagger bases in the i5 primer used for that sample
-staggerFile="/project/shafferslab/Guillaume/ToddBC3/staggerfile.csv"
+staggerFile="/project/shafferslab/Guillaume/ToddBC2/staggerfile.csv"
 
 #If you got FASTQ  files from BaseSpace write "bs" if you got them by running bcl2fastq write "bf"
 fastq_origin="bs"
@@ -26,7 +26,7 @@ fastq_origin="bs"
 check_vector="both"
 
 #input how many bases of barcode is sequenced (for default enter 100)
-length="100"
+length="75"
 
 #specify Levenshtein distance (number of mismatches accepatable to consider barcodes to be the same)(the default is "8")
 ld="8"
@@ -38,7 +38,7 @@ countType="Reads"
 
 ##build out paths based on user inputs
 #source $scripts/bcenv/bin/activate
-source /home/gharm/bcenv2/bin/activate
+source $scripts/bcenv/bin/activate
 PATH=$PATH:${scripts}/starcode/
 TM_scripts=$scripts/PythonFunctions
 #put this path in environment
