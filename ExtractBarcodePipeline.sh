@@ -37,7 +37,6 @@ countType="Reads"
 ######## End of user modulated parameters
 
 ##build out paths based on user inputs
-#source $scripts/bcenv/bin/activate
 source $scripts/bcenv/bin/activate
 PATH=$PATH:${scripts}/starcode/
 TM_scripts=$scripts/PythonFunctions
@@ -46,8 +45,6 @@ export TM_scripts=$TM_scripts
 
 ##Start Runing code
 
-
-echo 1
 #organize fastq files properly
 if [[ $fastq_origin = "bs" ]]; then
   #Ben script step #0
