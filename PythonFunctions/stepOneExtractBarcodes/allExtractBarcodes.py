@@ -56,6 +56,5 @@ for index, i in enumerate(samples):
 	command = ["bsub",  "-J", "exractBarcodes{}".format(index + 1), "-o", "{}.extractBarcodes.stdout".format(i), "-e", "{}.extractBarcodes.stderr".format(i), \
 				"python", extractionScriptPath, i, "-s", staggers[index]] \
 				+ additionalArguments
-	print command
 	subprocess.call(command)
-	#print command
+	
