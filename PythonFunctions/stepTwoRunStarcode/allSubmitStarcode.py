@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 import os, sys
 import glob
 import subprocess
-print("1")
+
 parser = ArgumentParser()
 parser.add_argument("experiment", help = "Specify the path to the experiment directory")
 parser.add_argument("-d", "--distance", help = "Specify the Levenshtein distance for clustering/merging sequences", type = str, default = "8")
@@ -19,6 +19,5 @@ samples = [os.path.basename(i) for i in glob.glob("{}/analyzed/*".format(args.ex
 for index, i in enumerate(samples):
 	command = ["bsub", "-M", "32000", "-J", "starcode{}_d{}".format(index + 1, args.distance), "-o", "{}.starcode_d{}.stdout".format(i, args.distance), "-e", "{}.starcode_d{}.stderr".format(i, args.distance), \
 				"python", starcodeScriptPath, args.experiment, i, "-d", args.distance, "--check_vector", args.check_vector, "--countType", args.countType, "--clusterRatio", str(args.clusterRatio)]
-	print(command)
+
 	subprocess.call(command)
-	#print command
