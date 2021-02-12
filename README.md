@@ -31,7 +31,7 @@ Based on which primers were used, we recommend specifying the number of "stagger
   3. For your fastq files, you should be able to download them from base space or get them as an output from bcl2fastq
   4. Using cyberduck create a folder for this specific project on the cluster (we will refer to this as the "project folder")
   5. to upload the stagger file you can simply drag and drop the file into the folder
-  6. to upload the fastq you can try and drag and drop, but this is usually too slow. A better way for large files is to write this command in terminal `rsync -rav /path/containing/fastq/files <username>@mercury.pmacs.upenn.edu:/path/to/project/folder` replacing with correct paths and your username. it will then prompt you for your PMACS password and allow you to start transferring
+  6. to upload the fastq you can try and drag and drop, but this is usually too slow. A better way for large files is to open a new teminal window and enter the following command: `rsync -rav /path/containing/fastq/files <username>@mercury.pmacs.upenn.edu:/path/to/project/folder` replacing with correct paths and your username. it will then prompt you for your PMACS password and allow you to start transferring
   7. In the same project folder add a copy of the "ExtractBarcodePipeline.sh" file
   8. open the copied "ExtractBarcodePipeline.sh" file by right clicking on it and selecting "edit with..." and select a program with which to edit the file (text edit is fine, but I prefer Atom:https://atom.io).
   9. In this file edit the paths and parameters indicated under the line "########## Fill out these parameters ". for most applications you should not need to touch anything under the line "######## End of user modulated parameters"
