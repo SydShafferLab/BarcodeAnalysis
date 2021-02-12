@@ -11,6 +11,7 @@ NOTE: This repository is just meant to link existing packages (that I did not wr
  5. Change the file name from "BarcodeAnalysis-main" to simply "BarcodeAnalysis"
  6. To set up the virtual environment containing the necessary dependencies, open up terminal and type in `ssh <username>@consign.pmacs.upenn.edu` replacing <username> with your PMACS username, and hit enter. Then enter your PMACS password and hit enter
  7. You should now be in a session on the terminal.Enter `bsub -Is bash` to start up a node
+ 8. the first step is to compile starcode by running: `make -C /home/gharm/BarcodeAnalysis/starcode`
  8. We will now make sure we are in the correct python version by entering the command `module load python/2.7.9`. If this worked you should be able to enter `python --version` and see the output `Python 2.7.9`
  9. enter `cd /home/<username>/BarcodeAnalysis/` replacing <username> with your PMACS username. (tip: to get paths of folders I usually right click on them in cyberduck, select "copy URL", and select either choice, and keep everything after ".edu")
  10. now set up your virtual environment by entering the line `python -m virtualenv bcenv`
