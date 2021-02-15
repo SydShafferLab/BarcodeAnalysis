@@ -77,6 +77,41 @@ fi
 
 python $TM_scripts/stepOneExtractBarcodes/allExtractBarcodes.py $project_folder/repo/ --staggerFile $staggerFile -r -l $length --check_vector $check_vector
 
+
+#wait until the above process is done
+
+#figure out how many output files there should be
+#find number of folders raw data folder
+nfold=$(find $project_folder/repo/raw/ -mindepth 1 -type d | wc -l)
+
+#get the expected number of files in the directory
+enfile=$(expr $nfold \* 4)
+
+#get the current number of files in the directory
+cnfile=$(find $project_folder/repo/analyzed -type f | wc -l)
+
+cnt=0
+# until the current number files in the directory arent equal to the number of files in the directory wait 5 min then recalculate the current number of files
+while [ $cnfile -ne $enfile ]
+do
+  of=$(find $project_folder/repo/analyzed -type f | wc -l)
+  sleep 5m
+  cnfile=$(find $project_folder/repo/analyzed -type f | wc -l)
+  df=$(expr $cnfile - $of)
+  cnt=$(expr $cnt + 1)
+
+
+  if [ $cnt -ge 6 ] && [ $df -le 0 ]; then
+    echo "ERROR: count files not being produced at expected rate, the input may be wrong or need to modify script to increase time "
+    exit 1
+  else
+    cnt=0
+    :
+  fi
+
+done
+
+
 #give read write privlages to all files made
 chmod -R 775 $project_folder/
 
