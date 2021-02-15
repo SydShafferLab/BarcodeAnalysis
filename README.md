@@ -7,7 +7,7 @@ NOTE: This repository is just meant to link existing packages (that I did not wr
  1. If you don’t already have it I recommend you download cyberduck (https://cyberduck.io) to easily interface with the cluster
  2. Once cyberduck is installed, open it, hit open connection, in the top drop-down menu select "SFTP(SSH File Transfer Protocol)", for server type in "mercury.pmacs.upenn.edu", enter your PMACS username and password, and hit connect.
  3. Download all the files in this GitHub repository by hitting the green "Code" button above on this page, and select "Download ZIP"
- 4. Drag and drop the downloaded file "BarcodeAnalysis-main" into your home directory in cyberduck (for future steps to work without modification this needs to be in your home directory, in cyberduck the drop down should read "/home/<username>")
+ 4. Drag and drop the downloaded file "BarcodeAnalysis-main" into your home directory in cyberduck (for future steps to work without modification this needs to be in your home directory, in cyberduck the drop down should read "/home/username")
  5. Change the file name from "BarcodeAnalysis-main" to simply "BarcodeAnalysis"
  6. To set up the virtual environment containing the necessary dependencies, open up terminal and type in `ssh <username>@consign.pmacs.upenn.edu` replacing <username> with your PMACS username, and hit enter. Then enter your PMACS password and hit enter
  7. You should now be in a session on the terminal.Enter `bsub -Is bash` to start up a node
