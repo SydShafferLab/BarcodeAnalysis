@@ -11,7 +11,7 @@ NOTE: This repository is just meant to link existing packages (that I did not wr
  5. Change the file name from "BarcodeAnalysis-main" to simply "BarcodeAnalysis"
  6. To set up the virtual environment containing the necessary dependencies, open up terminal and type in `ssh <username>@consign.pmacs.upenn.edu` replacing <username> with your PMACS username, and hit enter. Then enter your PMACS password and hit enter
  7. You should now be in a session on the terminal.Enter `bsub -Is bash` to start up a node
- 8. the first step is to compile starcode by running: `make -C /home/gharm/BarcodeAnalysis/starcode`
+ 8. the first step is to compile starcode by running: `make -C /home/<username>/BarcodeAnalysis/starcode`
  8. We will now make sure we are in the correct python version by entering the command `module load python/2.7.9`. If this worked you should be able to enter `python --version` and see the output `Python 2.7.9`
  9. enter `cd /home/<username>/BarcodeAnalysis/` replacing <username> with your PMACS username. (tip: to get paths of folders I usually right click on them in cyberduck, select "copy URL", and select either choice, and keep everything after ".edu")
  10. now set up your virtual environment by entering the line `python -m virtualenv bcenv`
@@ -31,7 +31,7 @@ Based on which primers were used, we recommend specifying the number of "stagger
   3. For your fastq files, you should be able to download them from base space or get them as an output from bcl2fastq
   4. Using cyberduck create a folder for this specific project on the cluster (we will refer to this as the "project folder")
   5. to upload the stagger file you can simply drag and drop the file into the folder
-  6. to upload the fastq you can try and drag and drop, but this is usually too slow. A better way for large files is to write this command in terminal `rsync -rav /path/containing/fastq/files <username>@mercury.pmacs.upenn.edu:/path/to/project/folder` replacing with correct paths and your username. it will then prompt you for your PMACS password and allow you to start transferring
+  6. to upload the fastq you can try and drag and drop, but this is usually too slow. A better way for large files is to open a new teminal window and enter the following command: `rsync -rav /path/containing/fastq/files <username>@mercury.pmacs.upenn.edu:/path/to/project/folder` replacing with correct paths and your username. it will then prompt you for your PMACS password and allow you to start transferring
   7. In the same project folder add a copy of the "ExtractBarcodePipeline.sh" file
   8. open the copied "ExtractBarcodePipeline.sh" file by right clicking on it and selecting "edit with..." and select a program with which to edit the file (text edit is fine, but I prefer Atom:https://atom.io).
   9. In this file edit the paths and parameters indicated under the line "########## Fill out these parameters ". for most applications you should not need to touch anything under the line "######## End of user modulated parameters"
