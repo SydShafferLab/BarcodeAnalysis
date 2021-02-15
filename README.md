@@ -7,7 +7,7 @@ NOTE: This repository is just meant to link existing packages (that I did not wr
  1. If you don’t already have it I recommend you download cyberduck (https://cyberduck.io) to easily interface with the cluster
  2. Once cyberduck is installed, open it, hit open connection, in the top drop-down menu select "SFTP(SSH File Transfer Protocol)", for server type in "mercury.pmacs.upenn.edu", enter your PMACS username and password, and hit connect.
  3. Download all the files in this GitHub repository by hitting the green "Code" button above on this page, and select "Download ZIP"
- 4. Drag and drop the downloaded file "BarcodeAnalysis-main" into your home directory in cyberduck (for future steps to work without modification this needs to be in your home directory, in cyberduck the drop down should read "/home/<username>")
+ 4. Drag and drop the downloaded file "BarcodeAnalysis-main" into your home directory in cyberduck (for future steps to work without modification this needs to be in your home directory, in cyberduck the drop down should read "/home/username")
  5. Change the file name from "BarcodeAnalysis-main" to simply "BarcodeAnalysis"
  6. To set up the virtual environment containing the necessary dependencies, open up terminal and type in `ssh <username>@consign.pmacs.upenn.edu` replacing <username> with your PMACS username, and hit enter. Then enter your PMACS password and hit enter
  7. You should now be in a session on the terminal.Enter `bsub -Is bash` to start up a node
@@ -40,7 +40,7 @@ Based on which primers were used, we recommend specifying the number of "stagger
   ## Running barcode detection
  1. Open a terminal window and sign into your pmacs by running the line `ssh <username>@consign.pmacs.upenn.edu` (replacing <username> with your PMACS username) hit enter, and then enter your PMACS password and hit enter
  2. Now activate a node on the cluster by running the command `bsub -Is bash`
- 3. Next activate the line `bsub -e Error.e -o Output.o sh /PATH/ExtractBarcodePipeline.sh` replacing "PATH" with the correct directory to your edited ExtractBarcodePipeline.sh file which should be in your project folder.
+ 3. Next activate the line `bsub -e Error.e -o Output.o sh /home/<username>/BarcodeAnalysis/ExtractBarcodePipeline.sh` replacing "PATH" with the correct directory to your edited ExtractBarcodePipeline.sh file which should be in your project folder.
  4. The full barcode counting pipeline should now run without the need for any more input.
  5. Once complete you should find a file in "/path/to/project/folder/repo/analyzed/sample_name/starcode/" that contains the seqeunce of the barcodes in the first column, and how many times that barcode was seen in that sample in the second column. You can download these files and use them for further analysis.
 
