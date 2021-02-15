@@ -100,15 +100,15 @@ do
   df=$(expr $cnfile - $of)
   cnt=$(expr $cnt + 1)
 
-
-  if [ $cnt -ge 6 ] && [ $df -le 0 ]; then
-    echo "ERROR: count files not being produced at expected rate, the input may be wrong or need to modify script to increase time "
-    exit 1
-  else
-    cnt=0
-    :
+  if [ $df -le 0 ]; then
+    cnt=$(expr $cnt + 1)
+    if [ $cnt -ge 6 ] && [ $df -le 0 ]; then
+      echo "ERROR: count files not being produced at expected rate, the input may be wrong or need to modify script to increase time "
+      exit 1
+    else
+      :
+    fi
   fi
-
 done
 
 
