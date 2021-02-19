@@ -98,7 +98,6 @@ do
   sleep 5m
   cnfile=$(find $project_folder/repo/analyzed -type f | wc -l)
   df=$(expr $cnfile - $of)
-  cnt=$(expr $cnt + 1)
 
   if [ $df -le 0 ]; then
     cnt=$(expr $cnt + 1)
