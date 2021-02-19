@@ -17,9 +17,9 @@ import shutil
 #path to all barcode analyssi scripts
 scripts="/home/gharm/BarcodeAnalysis"
 #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
-Fastqfolder="/project/shafferslab/Guillaume/10X_exp1/Barcode_Seq_Raw/BaseSpace_FASTQ"
+Fastqfolder="/project/shafferslab/Guillaume/10X_exp1_reanalysis/Barcode_Seq_Raw/BaseSpace_FASTQ"
 #folder you want outputs go go into (dont make this folder, this scipt will make it)
-Outfolder = "/project/shafferslab/Guillaume/10X_exp1/TestOut"
+Outfolder = "/project/shafferslab/Guillaume/10X_exp1_reanalysis/TestOut"
 
 #length to keep from sequenced barcode (this is actual bacode, does not include strt seq below)
 bclen = 60
@@ -58,11 +58,29 @@ os.mkdir(CellRfq)
 #get all Read2 fastq file paths
 all_R2 = glob.glob(Fastqfolder + "/**/*_R2*.fastq", recursive = True)
 
+#define samples
+samples = []
+for paths in all_R2:
+    samples.append (paths.split("/")[-1].split("_")[0])
+samples = list(set(samples))
+samples.sort()
+
 #loop through all the Read 2 fastq files (which contain barcode sequences)
-for files in all_R2:
+for sample in samples:
+    s_fastq = []
+    for path in all_R2:
+        if "/"+ sample in path:
+            s_fastq.append(path)
+    s_fastq.sort()
+    #get the sequences in all the fastqs
+    #conatains all sequences for a sample
     seqs = []
-    for record in SeqIO.parse(files, "fastq"):
-        seqs.append(str(record.seq))
+    #keep track of the files each sequence comes from
+    nseqs = []
+    for fsmp in s_fastq:
+        nseqs.append(fsmp + "|" + str(len(seqs)))
+        for record in SeqIO.parse(fsmp, "fastq"):
+                seqs.append(str(record.seq))
 
 
     #determine which seqeunces are actual barcodes by determining which start with the constant sequence before the barcode
@@ -97,11 +115,8 @@ for files in all_R2:
     for i in modseq1:
         sc_input.append(i[0:bclen+len(strtseq)])
 
-
-
     #write files with these edited barcodes ( these are used as the input into starcode)
-    # may need to change this to actually extract the sample name
-    f = open(sc_in + "/" "sc_input" + "_" + files.split("/")[-1].split(".")[0] +".txt","w")
+    f = open(sc_in + "/" "sc_input" + "_" + sample +".txt","w")
     f.write('\n'.join(sc_input))
 
 
@@ -111,7 +126,7 @@ all_sc_in = glob.glob(sc_in + "sc_input*.txt")
 
 #for all the starcode input files run starcode
 for files in all_sc_in:
-    outpath = sc_out + "sc_output_" +files.split("/")[-1].split("sc_input_")[-1]
+    outpath = sc_out + "sc_output_" + files.split("/")[-1].split("sc_input_")[-1]
     starcodeCommand = ['bsub', '-M','32000','-e' ,"Error_" + files.split("_")[-1], '-o', 'Output_' + files.split("_")[-1] ,'starcode', '-d', str(sc_mm), '-t', '20', '-i', files, '-o', outpath, '--seq-id']
     subprocess.call(starcodeCommand)
 
@@ -122,38 +137,42 @@ cnt = 0
 while (len(all_sc_out) < len(all_sc_in)):
 
     onf = len(all_sc_out)
-    sleep(60)
+    sleep(300)
     all_sc_out = glob.glob(sc_out + "sc_output*.txt")
     df = len(all_sc_out)-onf
 
     if df <= 0 :
         cnt = cnt + 1
-        if cnt >= 10 and df <= 0:
+        if cnt >= 12 and df <= 0:
             print("ERROR: stracode files not being produced at expected rate, the input may be wrong or if inputing large files into starcod you may need to modify script to increase time allowed to produce these fiels")
             exit()
 
 #### REPLACE ORGINAL SEQUENCES WITH MODIFIED SEQUENCES IN FASTQ FILES
 all_sc_out = glob.glob(sc_out + "sc_output*.txt")
+all_sc_out.sort()
 
 for scfiles in all_sc_out:
+
+    #define sample
+    sample = scfiles.split("sc_output_")[-1].split(".")[0]
 
     #read in starcode file and make a list of its lines
     starcode_file = open(scfiles, "r")
     sc_lines = starcode_file.readlines()
 
-    #read in fastq file
-    c_fastq = scfiles.split("/")[-1].split("sc_output_")[-1].split(".")[0]
-
-    for R2 in all_R2:
-        if c_fastq in R2:
-            c_fastq_path = R2
-
-    fastq_file= open(c_fastq_path, "r")
-    fq_lines = fastq_file.readlines()
+    #read in fastq files of given sample (concateniating all fastq files from same sample into one list)
+    cat_fastq = []
+    l_fastq = []
+    for path in all_R2:
+        if "/"+ sample in path:
+            fastq_file = open(path, "r")
+            l_fastq.append(path + "|" + str(len(cat_fastq)))
+            for line in fastq_file:
+                cat_fastq.append(line)
 
     for i in sc_lines:
-        split_sc = i.split("\t")
         #get the barcode sequence in the line
+        split_sc = i.split("\t")
         bcseq = split_sc[0]
         #get the list of lines that need to be replaces with bcseq
         rind = split_sc[2].split(",")
@@ -162,13 +181,26 @@ for scfiles in all_sc_out:
         #convert index from sc_output file indexes to fastq file indexes
         rind=rind*4-3
         for j in rind:
-            fq_lines[j] = bcseq + "\n"
+            cat_fastq[j] = bcseq + "\n"
             #edit quality score to be the same length as the sequence
-            fq_lines[j+2] = fq_lines[j+2][0:len(bcseq)] + "\n"
+            cat_fastq[j+2] = cat_fastq[j+2][0:len(bcseq)] + "\n"
 
-    n_fastq = open(mod_R2 + scfiles.split("/")[-1].split("sc_output_")[-1].split(".")[0] + ".fastq", "w")
-    n_fastq.writelines(fq_lines)
-    n_fastq.close()
+
+    L1 = cat_fastq[int(l_fastq[0].split("|")[-1]) : int(l_fastq[1].split("|")[-1])-1]
+    L2 = cat_fastq[int(l_fastq[1].split("|")[-1]) : int(l_fastq[2].split("|")[-1])-1]
+    L3 = cat_fastq[int(l_fastq[2].split("|")[-1]) : int(l_fastq[3].split("|")[-1])-1]
+    L4 = cat_fastq[int(l_fastq[3].split("|")[-1]) : ]
+
+    fq_list = [L1,L2,L3,L4]
+
+    #write edited fastq files
+    #ind to determine which file to write
+    ind = -1
+    for el in l_fastq:
+        ind = ind + 1
+        n_fastq = open(mod_R2 + el.split("|")[0].split("/")[-1], "w")
+        n_fastq.writelines(fq_list[ind])
+        n_fastq.close()
 
 
 ### USING GENERATED FILES CREATE OUTPUTS TO RUN CELLRANGE FEATURE BARCODE ANALYSIS
