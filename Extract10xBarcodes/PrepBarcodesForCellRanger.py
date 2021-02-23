@@ -34,6 +34,10 @@ sc_mm = 8
 
 #### END OF USER DEFINED PARAMETERS ##### NOTE: there are many more parameters that can be changed but this required you to go into the code below and understand all the different funtions
 
+#define funtion to determine file has something in the first line (consider files with nothing in the first line as empty)
+def empty(fname):
+    with open(fname) as f:
+       return f.readline() == ""
 
 #define any new paths
 sc_in = Outfolder + "/starcode_inputs/"
@@ -55,6 +59,7 @@ os.mkdir(CellRfq)
 
 
 ### GET ALL BARCODES TO START WITH SAME SEQUENCE AND TRIM THE BARCODES
+
 #get all Read2 fastq file paths
 all_R2 = glob.glob(Fastqfolder + "/**/*_R2*.fastq", recursive = True)
 
@@ -64,21 +69,16 @@ for paths in all_R2:
     samples.append (paths.split("/")[-1].split("_")[0])
 samples = list(set(samples))
 samples.sort()
-
 #loop through all the Read 2 fastq files (which contain barcode sequences)
 for sample in samples:
     s_fastq = []
     for path in all_R2:
         if "/"+ sample in path:
             s_fastq.append(path)
-    s_fastq.sort()
     #get the sequences in all the fastqs
     #conatains all sequences for a sample
     seqs = []
-    #keep track of the files each sequence comes from
-    nseqs = []
     for fsmp in s_fastq:
-        nseqs.append(fsmp + "|" + str(len(seqs)))
         for record in SeqIO.parse(fsmp, "fastq"):
                 seqs.append(str(record.seq))
 
@@ -129,17 +129,22 @@ for files in all_sc_in:
     outpath = sc_out + "sc_output_" + files.split("/")[-1].split("sc_input_")[-1]
     starcodeCommand = ['bsub', '-M','32000','-e' ,"Error_" + files.split("_")[-1], '-o', 'Output_' + files.split("_")[-1] ,'starcode', '-d', str(sc_mm), '-t', '20', '-i', files, '-o', outpath, '--seq-id']
     subprocess.call(starcodeCommand)
+    sleep(.1)
+
 
 # Using a while loop to wait for starcode files to be produced. If starcodes arent appearing in a reasonable rate this errors out assuming an issue, but if there are large files you may need to change how long this code waits until erroring out
 all_sc_out = glob.glob(sc_out + "sc_output*.txt")
 
 cnt = 0
-while (len(all_sc_out) < len(all_sc_in)):
-
-    onf = len(all_sc_out)
+while sum([empty(file) for file in all_sc_out]) > 0:
+    #old number of empty files
+    o_nef = sum([empty(file) for file in all_sc_out])
     sleep(300)
-    all_sc_out = glob.glob(sc_out + "sc_output*.txt")
-    df = len(all_sc_out)-onf
+    #new number of empty files
+    n_nef = sum([empty(file) for file in all_sc_out])
+
+    #determine in the number of emty files is changing
+    df = o_nef - n_nef
 
     if df <= 0 :
         cnt = cnt + 1
@@ -149,15 +154,16 @@ while (len(all_sc_out) < len(all_sc_in)):
 
 #### REPLACE ORGINAL SEQUENCES WITH MODIFIED SEQUENCES IN FASTQ FILES
 all_sc_out = glob.glob(sc_out + "sc_output*.txt")
-all_sc_out.sort()
 
-for scfiles in all_sc_out:
 
-    #define sample
-    sample = scfiles.split("sc_output_")[-1].split(".")[0]
+for sample in samples:
+    #define sc output file for that sample
+    for path in all_sc_out:
+        if "/sc_output_"+ sample in path:
+            scfile = path
 
     #read in starcode file and make a list of its lines
-    starcode_file = open(scfiles, "r")
+    starcode_file = open(scfile, "r")
     sc_lines = starcode_file.readlines()
 
     #read in fastq files of given sample (concateniating all fastq files from same sample into one list)
@@ -186,17 +192,18 @@ for scfiles in all_sc_out:
             cat_fastq[j+2] = cat_fastq[j+2][0:len(bcseq)] + "\n"
 
 
-    L1 = cat_fastq[int(l_fastq[0].split("|")[-1]) : int(l_fastq[1].split("|")[-1])-1]
-    L2 = cat_fastq[int(l_fastq[1].split("|")[-1]) : int(l_fastq[2].split("|")[-1])-1]
-    L3 = cat_fastq[int(l_fastq[2].split("|")[-1]) : int(l_fastq[3].split("|")[-1])-1]
-    L4 = cat_fastq[int(l_fastq[3].split("|")[-1]) : ]
+    F1 = cat_fastq[int(l_fastq[0].split("|")[-1]) : int(l_fastq[1].split("|")[-1])-1]
+    F2 = cat_fastq[int(l_fastq[1].split("|")[-1]) : int(l_fastq[2].split("|")[-1])-1]
+    F3 = cat_fastq[int(l_fastq[2].split("|")[-1]) : int(l_fastq[3].split("|")[-1])-1]
+    F4 = cat_fastq[int(l_fastq[3].split("|")[-1]) : ]
 
-    fq_list = [L1,L2,L3,L4]
+    fq_list = [F1,F2,F3,F4]
 
     #write edited fastq files
     #ind to determine which file to write
     ind = -1
     for el in l_fastq:
+        print(el)
         ind = ind + 1
         n_fastq = open(mod_R2 + el.split("|")[0].split("/")[-1], "w")
         n_fastq.writelines(fq_list[ind])
