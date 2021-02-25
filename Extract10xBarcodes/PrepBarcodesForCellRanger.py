@@ -17,9 +17,9 @@ import shutil
 #path to all barcode analyssi scripts
 scripts="/home/gharm/BarcodeAnalysis"
 #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
-Fastqfolder="/project/shafferslab/Guillaume/10X_exp1_reanalysis/Barcode_Seq_Raw/BaseSpace_FASTQ"
+Fastqfolder="/project/shafferslab/Guillaume/10X_exp1_reanalysis/BarcodeProcessing/Barcode_Seq_Raw/BaseSpace_FASTQ"
 #folder you want outputs go go into (dont make this folder, this scipt will make it)
-Outfolder = "/project/shafferslab/Guillaume/10X_exp1_reanalysis/TestOut"
+Outfolder = "/project/shafferslab/Guillaume/10X_exp1_reanalysis/BarcodeProcessing/Barcode_output"
 
 #length to keep from sequenced barcode (this is actual bacode, does not include strt seq below)
 bclen = 60
@@ -44,7 +44,7 @@ sc_in = Outfolder + "/starcode_inputs/"
 sc_out = Outfolder + "/starcode_outputs/"
 mod_R2 = Outfolder + "/Modified_fastq/"
 CellR = Outfolder + "/CellRanger_inputs/"
-CellRfq = CellR + "/FASTQ/"
+CellRfq = CellR + "FASTQ/"
 
 #add starcode to PATH
 os.environ["PATH"] += os.pathsep + scripts + '/starcode/'
@@ -66,7 +66,7 @@ all_R2 = glob.glob(Fastqfolder + "/**/*_R2*.fastq", recursive = True)
 #define samples
 samples = []
 for paths in all_R2:
-    samples.append (paths.split("/")[-1].split("_")[0])
+    samples.append(paths.split("/")[-1].split("_")[0])
 samples = list(set(samples))
 samples.sort()
 #loop through all the Read 2 fastq files (which contain barcode sequences)
@@ -229,8 +229,12 @@ with open(CellR + "FeatureReference.csv" , 'w+') as outfile:
 all_modR2 = glob.glob(mod_R2 + "*_R2*.fastq", recursive = True)
 all_R1 = glob.glob(Fastqfolder + "/**/*_R1*.fastq", recursive = True)
 
-for R2file in all_modR2:
-        shutil.copy(R2file, CellRfq)
-
-for R1file in all_R1:
-        shutil.copy(R1file, CellRfq)
+for sample in samples:
+    sf = CellRfq + sample
+    os.mkdir(sf)
+    for R2file in all_modR2:
+        if "/"+ sample in R2file:
+            shutil.copy(R2file, sf)
+    for R1file in all_R1:
+        if "/"+ sample in R1file:
+            shutil.copy(R1file, sf)
