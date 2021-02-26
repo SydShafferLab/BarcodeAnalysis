@@ -1,3 +1,4 @@
+# Run this script by entering the 10xbc environment and then runing: python /path/to/PrepBarcodesForCellRanger.py
 import Bio
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -129,10 +130,14 @@ for files in all_sc_in:
     outpath = sc_out + "sc_output_" + files.split("/")[-1].split("sc_input_")[-1]
     starcodeCommand = ['bsub', '-M','32000','-e' ,"Error_" + files.split("_")[-1], '-o', 'Output_' + files.split("_")[-1] ,'starcode', '-d', str(sc_mm), '-t', '20', '-i', files, '-o', outpath, '--seq-id']
     subprocess.call(starcodeCommand)
-    sleep(.1)
+    sleep(1)
 
 
 # Using a while loop to wait for starcode files to be produced. If starcodes arent appearing in a reasonable rate this errors out assuming an issue, but if there are large files you may need to change how long this code waits until erroring out
+
+#wait 100seconds to make sure that all the emty starcdoes files are generated
+sleep(300)
+#define paths of all sc outputs
 all_sc_out = glob.glob(sc_out + "sc_output*.txt")
 
 cnt = 0
@@ -153,13 +158,12 @@ while sum([empty(file) for file in all_sc_out]) > 0:
             exit()
 
 #### REPLACE ORGINAL SEQUENCES WITH MODIFIED SEQUENCES IN FASTQ FILES
-all_sc_out = glob.glob(sc_out + "sc_output*.txt")
 
 
 for sample in samples:
     #define sc output file for that sample
     for path in all_sc_out:
-        if "/sc_output_"+ sample in path:
+        if "/sc_output_" + sample in path:
             scfile = path
 
     #read in starcode file and make a list of its lines
@@ -203,7 +207,6 @@ for sample in samples:
     #ind to determine which file to write
     ind = -1
     for el in l_fastq:
-        print(el)
         ind = ind + 1
         n_fastq = open(mod_R2 + el.split("|")[0].split("/")[-1], "w")
         n_fastq.writelines(fq_list[ind])
@@ -213,17 +216,25 @@ for sample in samples:
 ### USING GENERATED FILES CREATE OUTPUTS TO RUN CELLRANGE FEATURE BARCODE ANALYSIS
 
 #make Feature Reference CSV
-all_scout = glob.glob(sc_out + "sc_output*.txt", recursive = True)
+
+#list of all final barcodes
+fbc = []
+for fname in all_sc_out:
+    with open(fname) as infile:
+        for line in infile:
+            if strtseq in line:
+                fbc.append(line[len(strtseq):].split("\t")[0])
+#keep only unique barcode sequences
+fbc = list(set(fbc))
+
 #cnt for nameing barcodes
 cnt = 0
 with open(CellR + "FeatureReference.csv" , 'w+') as outfile:
-    for fname in all_scout:
-        with open(fname) as infile:
-            for line in infile:
-                if strtseq in line:
-                    cnt = cnt + 1
-                    full_line = "L" + str(cnt) + "," + "Lin" + str(cnt) + "," + "R2," + "5P" + strtseq + "(BC)," + line.split("\t")[0] + "," + "Custom\n"
-                    outfile.write(full_line)
+    outfile.write("id,name,read,pattern,sequence,feature_type\n")
+    for bc in fbc:
+        cnt = cnt + 1
+        full_line = "L" + str(cnt) + "," + "Lin" + str(cnt) + "," + "R2," + "5P" + strtseq + "(BC)," + bc + "," + "Custom\n"
+        outfile.write(full_line)
 
 #create fastq directory with the unchaged Read 1 files and the modified read2 files
 all_modR2 = glob.glob(mod_R2 + "*_R2*.fastq", recursive = True)
