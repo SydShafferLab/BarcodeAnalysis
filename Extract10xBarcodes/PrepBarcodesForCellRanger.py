@@ -18,19 +18,18 @@ import shutil
 #path to all barcode analyssi scripts
 scripts="/home/gharm/BarcodeAnalysis"
 #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
-Fastqfolder="/project/shafferslab/Guillaume/10X_exp1_reanalysis/BarcodeProcessing/Barcode_Seq_Raw/BaseSpace_FASTQ"
+Fastqfolder="/project/shafferslab/Guillaume/10X_exp1_reanalysis/20190808_10X1_BC_r1_r2_seq1_fastq/outs/fastq_path/10x"
 #folder you want outputs go go into (dont make this folder, this scipt will make it)
 Outfolder = "/project/shafferslab/Guillaume/10X_exp1_reanalysis/BarcodeProcessing/Barcode_output"
 
 #length to keep from sequenced barcode (this is actual bacode, does not include strt seq below)
-bclen = 60
+bclen = 70
 
 #common sequence right before starcode starts
-strtseq = "AGGACGAGCTGTACAAGTAGG"
+strtseq = "GGACGAGCTGTACAAGTAGG"
 
 #allowed number of mismatches between barcodes to be called the same (starcode input)
 sc_mm = 8
-
 
 
 #### END OF USER DEFINED PARAMETERS ##### NOTE: there are many more parameters that can be changed but this required you to go into the code below and understand all the different funtions
@@ -58,6 +57,11 @@ os.mkdir(mod_R2)
 os.mkdir(CellR)
 os.mkdir(CellRfq)
 
+#unzip all files created by 10x for barcode runs
+
+gunzipCommand = ['gunzip', '-r', Fastqfolder]
+subprocess.call(gunzipCommand)
+print("unziped")
 
 ### GET ALL BARCODES TO START WITH SAME SEQUENCE AND TRIM THE BARCODES
 
@@ -195,10 +199,10 @@ for sample in samples:
             #edit quality score to be the same length as the sequence
             cat_fastq[j+2] = cat_fastq[j+2][0:len(bcseq)] + "\n"
 
-
-    F1 = cat_fastq[int(l_fastq[0].split("|")[-1]) : int(l_fastq[1].split("|")[-1])-1]
-    F2 = cat_fastq[int(l_fastq[1].split("|")[-1]) : int(l_fastq[2].split("|")[-1])-1]
-    F3 = cat_fastq[int(l_fastq[2].split("|")[-1]) : int(l_fastq[3].split("|")[-1])-1]
+    #F2 = cat_fastq[int(l_fastq[1].split("|")[-1]) : int(l_fastq[2].split("|")[-1])-1]
+    F1 = cat_fastq[int(l_fastq[0].split("|")[-1]) : int(l_fastq[1].split("|")[-1])]
+    F2 = cat_fastq[int(l_fastq[1].split("|")[-1]) : int(l_fastq[2].split("|")[-1])]
+    F3 = cat_fastq[int(l_fastq[2].split("|")[-1]) : int(l_fastq[3].split("|")[-1])]
     F4 = cat_fastq[int(l_fastq[3].split("|")[-1]) : ]
 
     fq_list = [F1,F2,F3,F4]
@@ -238,7 +242,11 @@ with open(CellR + "FeatureReference.csv" , 'w+') as outfile:
 
 #create fastq directory with the unchaged Read 1 files and the modified read2 files
 all_modR2 = glob.glob(mod_R2 + "*_R2*.fastq", recursive = True)
-all_R1 = glob.glob(Fastqfolder + "/**/*_R1*.fastq", recursive = True)
+#get all the fastq files that were not R2 files
+all_nR2 = []
+all_nR2.extend(glob.glob(Fastqfolder + "/**/*_R1*.fastq", recursive = True))
+all_nR2.extend(glob.glob(Fastqfolder + "/**/*_I1*.fastq", recursive = True))
+all_nR2.extend(glob.glob(Fastqfolder + "/**/*_I2*.fastq", recursive = True))
 
 for sample in samples:
     sf = CellRfq + sample
@@ -246,6 +254,6 @@ for sample in samples:
     for R2file in all_modR2:
         if "/"+ sample in R2file:
             shutil.copy(R2file, sf)
-    for R1file in all_R1:
+    for R1file in all_nR2:
         if "/"+ sample in R1file:
             shutil.copy(R1file, sf)
