@@ -5,4 +5,4 @@ Select from the following menu for the pipeline most appropriate for you data
 
 [Barcodes from gDNA](https://github.com/SydShafferLab/BarcodeAnalysis/wiki/Barcodes-from-gDNA)
 
-[Barcoding combined with 10X](https://github.com/SydShafferLab/BarcodeAnalysis/wiki/Combined-10X-and-Barcoding)
+[Barcoding combined with 10X](https://github.com/SydShafferLab/BarcodeAnalysis/wiki/Combined-10X-and-Barcoding) this is all wrong
