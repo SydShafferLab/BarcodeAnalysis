@@ -68,7 +68,7 @@ os.mkdir(CellRfq)
 #unzip all files created by 10x for barcode runs
 gunzipCommand = ['gunzip', '-r', Fastqfolder]
 subprocess.call(gunzipCommand)
-print("unziped")
+print("unzipped")
 
 ### GET ALL BARCODES TO START WITH SAME SEQUENCE AND TRIM THE BARCODES
 
