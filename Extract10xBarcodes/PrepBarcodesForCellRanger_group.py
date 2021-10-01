@@ -29,7 +29,7 @@ Outfolder = "/project/shafferslab/Guillaume/10X_exp1_reanalysis/BarcodeProcessin
 bclen = 70
 
 #common sequence right before starcode starts
-strtseq = "GGACGAGCTGTACAAGTAGG"
+strtseq = "GCTGTACAAGTAGG"
 
 #allowed number of mismatches between barcodes to be called the same (starcode input)
 sc_mm = 8
@@ -112,7 +112,7 @@ for sample in samples:
     # modify sequences so that those that have a start sequence (where there can be erros) get replaces with a pefect start sequence, and get rid of stagger so that all sequence start with the perfect start sequences
     modseq1 = []
     for i in seqs:
-        strt = i[bc_strt:len(strtseq)]
+        strt = i[bc_strt:(len(strtseq)+bc_strt)]
         pctmatch = (fuzz.ratio(strtseq,strt))
 
         if pctmatch >= 70:
