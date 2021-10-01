@@ -34,7 +34,7 @@ strtseq = "GCTGTACAAGTAGG"
 #allowed number of mismatches between barcodes to be called the same (starcode input)
 sc_mm = 8
 
-#Define which samples should be run together in starcode (any samples that could contain cells from the same lineage should be grouped together in a list with the GSAMP list)
+#Define which samples should be run together in starcode (any samples that could contain cells from the same lineage should be grouped together in a list within the GSAMP list)
 #EXAMPLE: if you have samples : s1,s2,s3, and s4  and they all share lineage barcode enter [["s1","s2","s3","s4"]] if none should share lineages enter [["s1"],["s2"],["s3"],["s4"]]
 #if s1 and s2 share lineage barcodes but none of the others do enter [["s1","s2"],["s3"],["s4"]]
 #NOTE: names used here should match the names that will be assinged to samples in line 77-81 in this script (should be everythign befor lane (_L0))
