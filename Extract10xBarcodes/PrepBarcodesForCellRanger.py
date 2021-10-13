@@ -29,7 +29,7 @@ Outfolder = "/project/shafferslab/Guillaume/10X_exp1_reanalysis/BarcodeProcessin
 bclen = 70
 
 #common sequence right before starcode starts
-strtseq = "GCTGTACAAGTAGG"
+strtseq = "GCTGTACAAGTAGGAT"
 
 #allowed number of mismatches between barcodes to be called the same (starcode input)
 sc_mm = 8
