@@ -23,17 +23,11 @@ from Functions.check_barcodes import check_barcodes
 print("Running...")
 print(" ")
 
-##### Users should modulate these parametes to run this script
-num_of_barcodes_to_use = 100  # number of barcodes to use to calculate LV (2 random samplings are taken)
-
+# Find paths_and_variables.json file
 path_to_script = os.path.abspath(os.getcwd())
 
 path_to_script = '/'.join(path_to_script.split('/')[:-1])
 path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json") 
-
-
-#### END OF USER DEFINED PARAMETERS ##### NOTE: there are many more parameters that can be changed but this required you to go into the code below and understand all the different funtions
-
 
 # read .json file
 with open(path, 'r') as myfile:
@@ -47,6 +41,8 @@ FastqfoldergDNA=result_dict['FastqfoldergDNA'] #Folder that contains all folders
 Outfolder= result_dict['Outfolder']    #folder you want outputs go go into (dont make this folder, this scipt will make it)
 strtseq= result_dict['strtseq']        #common sequence right before starcode starts
 GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode 
+num_of_barcodes_to_use= result_dict['num_of_barcodes_to_use']   # number of barcodes to use to calculate LV (2 random samplings are taken)
+
 
 # #define any new paths
 raw_seq_path = glob.glob(Outfolder + "/raw_sequences/**/*.txt")

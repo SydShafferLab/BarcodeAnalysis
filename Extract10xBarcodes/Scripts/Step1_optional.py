@@ -21,12 +21,15 @@ import json
 
 ##### Users should modulate these parametes to run this script
 
-path = os.path.expanduser("~/Documents/GitHub/PreBarcodeQuant/paths_and_variables.json")
-
 barcode_max_length = 70 #max length that can be inputed in starcode
 
 #### END OF USER DEFINED PARAMETERS ##### NOTE: there are many more parameters that can be changed but this required you to go into the code below and understand all the different funtions
 
+# Find paths_and_variables.json file
+path_to_script = os.path.abspath(os.getcwd())
+
+path_to_script = '/'.join(path_to_script.split('/')[:-1])
+path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json") 
 
 # read paths_and_variables.json file
 with open(path, 'r') as myfile:

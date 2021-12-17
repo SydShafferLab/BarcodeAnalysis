@@ -16,7 +16,12 @@ import shutil
 import re
 
 
-path = os.path.expanduser("~/paths_and_variables.json")
+# Find paths_and_variables.json file
+path_to_script = os.path.abspath(os.getcwd())
+
+path_to_script = '/'.join(path_to_script.split('/')[:-1])
+path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json") 
+
 
 # read paths_and_variables.json file
 with open(path, 'r') as myfile:
