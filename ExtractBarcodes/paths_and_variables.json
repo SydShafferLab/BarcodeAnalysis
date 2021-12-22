@@ -19,7 +19,7 @@
 
 
     //            Variables
-    //Determine whether the data has barcodes from 10x and gDNA "both" or only from 10x "10x"
+    //Determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
     "barcodeSource" : "both",
 
     //common sequence right before starcode starts
