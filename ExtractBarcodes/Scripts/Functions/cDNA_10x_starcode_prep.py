@@ -1,11 +1,15 @@
 # This function takes in Fastq files taken from 10x cDNA barcodes and trims the sequences
 # so that starcode can run properly
+from glob import glob
+from Bio import SeqIO
+import statistics
+from rapidfuzz import fuzz
+from time import sleep
 
-
-def cDNA_10x_starcode_prep(Fastqfolder10x,GSAMP,bclen,filt_haveStart_10x):
+def cDNA_10x_starcode_prep(Fastqfolder10x,sc_in,GSAMP,bclen,filt_haveStart_10x,strtseq,startseqMatch,sc_mm):
 
     #get all Read2 fastq file paths
-    all_R2_10x_unfilt = glob.glob(Fastqfolder10x + "/**/*_R2*.fastq", recursive = True)
+    all_R2_10x_unfilt = glob(Fastqfolder10x + "/**/*_R2*.fastq", recursive = True)
     all_R2_10x_unfilt.sort()
 
     # Remove any Read2 fastq files that you dont care about
@@ -114,7 +118,7 @@ def cDNA_10x_starcode_prep(Fastqfolder10x,GSAMP,bclen,filt_haveStart_10x):
         counter = counter+1
       
     #get all 10x Read1 fastq file paths
-    all_R1_10x_unfilt = glob.glob(Fastqfolder10x + "/**/*_R1*.fastq", recursive = True)
+    all_R1_10x_unfilt = glob(Fastqfolder10x + "/**/*_R1*.fastq", recursive = True)
     all_R1_10x_unfilt.sort()
 
     # Remove any Read1 fastq files that you dont care about
@@ -170,7 +174,7 @@ def cDNA_10x_starcode_prep(Fastqfolder10x,GSAMP,bclen,filt_haveStart_10x):
         counter = counter+1
 
     #get all 10x Index1 fastq file paths
-    all_I1_10x_unfilt = glob.glob(Fastqfolder10x + "/**/*_I1*.fastq", recursive = True)
+    all_I1_10x_unfilt = glob(Fastqfolder10x + "/**/*_I1*.fastq", recursive = True)
     all_I1_10x_unfilt.sort()
     # Remove any Read1 fastq files that you dont care about
     all_I1_10x_temp = [] 
@@ -225,7 +229,7 @@ def cDNA_10x_starcode_prep(Fastqfolder10x,GSAMP,bclen,filt_haveStart_10x):
         counter = counter+1
       
     #get all 10x Index2 fastq file paths
-    all_I2_10x_unfilt = glob.glob(Fastqfolder10x + "/**/*_I2*.fastq", recursive = True)
+    all_I2_10x_unfilt = glob(Fastqfolder10x + "/**/*_I2*.fastq", recursive = True)
     all_I2_10x_unfilt.sort()
 
     # Remove any Read1 fastq files that you dont care about
@@ -280,4 +284,5 @@ def cDNA_10x_starcode_prep(Fastqfolder10x,GSAMP,bclen,filt_haveStart_10x):
         
         counter = counter+1
 
+    return samples_R2_10x
 

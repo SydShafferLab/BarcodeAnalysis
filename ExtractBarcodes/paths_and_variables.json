@@ -3,20 +3,18 @@
 
     //              Paths
 
-	//Path to all barcode analyssi scripts
-    "scripts": "/home/user/BarcodeAnalysis", 
-
+	//Path to starcode folder
+    "starcode_path": "/home/raanreye/BarcodeAnalysis/starcode", 
+    
     //Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
-    "Fastqfolder10x": "/Users/raul/Desktop/BarcodePipeline_TestData/test_cDNA_fastqs", 
+    "Fastqfolder10x": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_cDNA_fastqs", 
 
     //Folder that contains all folders containing gDNA FASTQ files generated from sequencing the barcodes. 
     //If you do not have corresponding gDNA sample, leave empty ("").
-    "FastqfoldergDNA": "/Users/raul/Desktop/BarcodePipeline_TestData/test_gDNA_fastqs", 
-
+    "FastqfoldergDNA": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_gDNA_fastqs", 
 
     //Folder you want outputs go go into (dont make this folder, this scipt will make it)
-    "Outfolder": "/Users/raul/Desktop/BarcodePipeline_TestData/Barcode_output",
-
+    "Outfolder": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/Barcode_output_test_10x",
 
     //            Variables
     //Determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
@@ -33,7 +31,7 @@
     "sc_mm": 8,
 
     //The percentage match you for startseq to be called as correct in a barcode
-    "startseqMatch": 70,
+    "startseqMatch": 100,
 
     //Number of barcodes to use to calculate Levenshtein Distance (2 random samplings are taken)
     "num_of_barcodes_to_use": 50000,

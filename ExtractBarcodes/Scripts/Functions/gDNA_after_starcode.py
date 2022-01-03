@@ -1,9 +1,14 @@
 #
+from glob import glob
+from Bio import SeqIO
+from Bio.Seq import Seq
+import statistics
+from rapidfuzz import fuzz
+from time import sleep
 
-
-def gDNA_after_starcode(mod_R2,GSAMP,filt_WSN_gDNA):
+def gDNA_after_starcode(mod_R2,GSAMP,filt_haveStart_gDNA,filt_WSN_gDNA):
     #get all Read1 fastq file paths after starcode
-    all_R1_gDNA_mod_unfilt = glob.glob(mod_R2 + "/**/*_R1*.fastq", recursive = True)
+    all_R1_gDNA_mod_unfilt = glob(mod_R2 + "/**/*_R1*.fastq", recursive = True)
     all_R1_gDNA_mod_unfilt.sort()
 
     # Remove any Read1 fastq files that you dont care about
@@ -98,7 +103,7 @@ def gDNA_after_starcode(mod_R2,GSAMP,filt_WSN_gDNA):
             
             
     #get all Index1 fastq file paths after starcode
-    all_I1_gDNA_mod_unfilt = glob.glob(filt_haveStart_gDNA + "/**/*_I1*.fastq", recursive = True)
+    all_I1_gDNA_mod_unfilt = glob(filt_haveStart_gDNA + "/**/*_I1*.fastq", recursive = True)
     all_I1_gDNA_mod_unfilt.sort()
 
     # Remove any Index1 fastq files that you dont care about
@@ -155,7 +160,7 @@ def gDNA_after_starcode(mod_R2,GSAMP,filt_WSN_gDNA):
     
     
     #get all Index1 fastq file paths after starcode
-    all_I2_gDNA_mod_unfilt = glob.glob(filt_haveStart_gDNA + "/**/*_I2*.fastq", recursive = True)
+    all_I2_gDNA_mod_unfilt = glob(filt_haveStart_gDNA + "/**/*_I2*.fastq", recursive = True)
     all_I2_gDNA_mod_unfilt.sort()
 
     # Remove any Index1 fastq files that you dont care about

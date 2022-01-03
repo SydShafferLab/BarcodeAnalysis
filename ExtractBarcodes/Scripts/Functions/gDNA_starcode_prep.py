@@ -1,10 +1,15 @@
 # This function takes in Fastq files taken from gDNA barcodes and reverse complements the sequences + trims them
 # so that starcode can run properly
 
+from glob import glob
+from Bio import SeqIO
+import statistics
+from rapidfuzz import fuzz
+from time import sleep
 
-def gDNA_starcode_prep(FastqfoldergDNA,GSAMP,bclen,filt_haveStart_gDNA):   
+def gDNA_starcode_prep(FastqfoldergDNA,sc_in,GSAMP,bclen,filt_haveStart_gDNA,strtseq,startseqMatch,sc_mm):   
    #get all gDNA Read1 fastq file paths
-    all_R1_gDNA_unfilt = glob.glob(FastqfoldergDNA + "/**/*_R1*.fastq", recursive = True)
+    all_R1_gDNA_unfilt = glob(FastqfoldergDNA + "/**/*_R1*.fastq", recursive = True)
     all_R1_gDNA_unfilt.sort()
     
     # Remove any Read1 fastq files that you dont care about
@@ -117,7 +122,7 @@ def gDNA_starcode_prep(FastqfoldergDNA,GSAMP,bclen,filt_haveStart_gDNA):
     
     
     #get all gDNA Index1 fastq file paths
-    all_I1_gDNA_unfilt = glob.glob(FastqfoldergDNA + "/**/*_I1*.fastq", recursive = True)
+    all_I1_gDNA_unfilt = glob(FastqfoldergDNA + "/**/*_I1*.fastq", recursive = True)
     all_I1_gDNA_unfilt.sort()
 
     # Remove any Read1 fastq files that you dont care about
@@ -173,7 +178,7 @@ def gDNA_starcode_prep(FastqfoldergDNA,GSAMP,bclen,filt_haveStart_gDNA):
         counter = counter+1
         
     #get all gDNA Index2 fastq file paths
-    all_I2_gDNA_unfilt = glob.glob(FastqfoldergDNA + "/**/*_I2*.fastq", recursive = True)
+    all_I2_gDNA_unfilt = glob(FastqfoldergDNA + "/**/*_I2*.fastq", recursive = True)
     all_I2_gDNA_unfilt.sort()
 
     # Remove any Read1 fastq files that you dont care about

@@ -7,13 +7,14 @@ from rapidfuzz import fuzz
 import matplotlib as plt
 from matplotlib import pyplot
 import numpy as np
-import glob
+from glob import glob
 import os
 import subprocess
 from time import sleep
 import statistics
 import shutil
 import re
+import jstyleson
 
 from Functions.cDNA_10x_starcode_prep import cDNA_10x_starcode_prep
 from Functions.gDNA_starcode_prep import gDNA_starcode_prep
@@ -27,10 +28,10 @@ print(" ")
 
 
 # Find paths_and_variables.json file
-path_to_script = os.path.abspath(os.getcwd())
+path_to_script = os.path.realpath(__file__)
 
-path_to_script = '/'.join(path_to_script.split('/')[:-1])
-path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json") 
+path_to_script = '/'.join(path_to_script.split('/')[:-2])
+path = path = os.path.expanduser(path_to_script +"/paths_and_variables.json") 
 
 
 # read paths_and_variables.json file
@@ -39,17 +40,17 @@ with open(path, 'r') as myfile:
 
 result_dict =  jstyleson.loads(data) # Raise Exception
 
-scripts=result_dict['scripts']         #path to all barcode analyssi scripts
-Fastqfolder10x=result_dict['Fastqfolder10x'] #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
+starcode_path=result_dict['starcode_path']    #path to starcode
+Fastqfolder10x=result_dict['Fastqfolder10x']  #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
 FastqfoldergDNA=result_dict['FastqfoldergDNA']#Folder that contains all folders containing gDNA FASTQ files generated from sequencing the barcodes.
-Outfolder= result_dict['Outfolder']    #folder you want outputs go go into (dont make this folder, this scipt will make it)
-strtseq= result_dict['strtseq']        #common sequence right before starcode starts
-barcodeSource = result_dict['barcodeSource']    #determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
+Outfolder= result_dict['Outfolder']           #folder you want outputs go go into (dont make this folder, this scipt will make it)
+strtseq= result_dict['strtseq']               #common sequence right before starcode starts
+barcodeSource = result_dict['barcodeSource']  #determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
 GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode 
 bclen = result_dict['bclen']           #length to keep from sequenced barcode 
 strtseq =  result_dict['strtseq']      #common sequence right before starcode starts
 strtseq_revcomp =  result_dict['strtseq_revcomp'] #rev_comp common sequence right before starcode starts
-startseqMatch =  result_dict['startseqMatch']# The percentage match you for startseq to be called as correct in a barcode
+startseqMatch =  result_dict['startseqMatch']     # The percentage match you for startseq to be called as correct in a barcode
 sc_mm =  result_dict['sc_mm']          #allowed number of mismatches between barcodes to be called the same (starcode input)
 
 
@@ -62,8 +63,8 @@ def empty(fname):
 def does_folder_exist(path_to_folder):
     if not os.path.exists(path_to_folder):
         os.mkdir(path_to_folder)
-    else:
-        raise Exception("folder {} already exists".format(path_to_folder))
+    # else:
+    #     raise Exception("folder {} already exists".format(path_to_folder))
 
 
 
@@ -87,17 +88,17 @@ if barcodeSource == 'both' or barcodeSource == 'gDNA':
 
 
 # Add starcode to PATH
-os.environ["PATH"] += os.pathsep + scripts + '/starcode/'
+os.environ["PATH"] += starcode_path 
 
 
 # Make any necessary files
-path_to_folders = [sc_in,sc_out,mod_R2,filt_WSN_gDNA,CellR,CellRfq]
+path_to_folders = [Outfolder,sc_in,sc_out,mod_R2,CellR,CellRfq]
 
 if barcodeSource == 'both' or barcodeSource == '10x':
-    path_to_folders.append(filt_haveStart_10x,filt_haveStart_gDNA)
+    path_to_folders.extend([filt_haveStart_10x,filt_WSN_10x])
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':
-    path_to_folders.append(filt_haveStart_gDNA,filt_WSN_gDNA)
+    path_to_folders.extend([filt_haveStart_gDNA,filt_WSN_gDNA])
 
 # checking whether folder/directory exists
 for path_to_folder in path_to_folders:
@@ -124,18 +125,18 @@ if barcodeSource == 'both' or barcodeSource == 'gDNA':
 #--------------------------------------------------------------------------
 
 ## Set up sequences for starcode
-
+print(" ")
 print("     Setting up sequences for starcode")
 print(" ")
 
 if barcodeSource == 'both' or barcodeSource == '10x':
 
-    cDNA_10x_starcode_prep(Fastqfolder10x,GSAMP,bclen,filt_haveStart_10x)
+    samples_R2_10x = cDNA_10x_starcode_prep(Fastqfolder10x,sc_in,GSAMP,bclen,filt_haveStart_10x,strtseq,startseqMatch,sc_mm)
 
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':
  
-    gDNA_starcode_prep(FastqfoldergDNA,GSAMP,bclen)
+    gDNA_starcode_prep(FastqfoldergDNA,sc_in,GSAMP,bclen,filt_haveStart_gDNA,strtseq,startseqMatch,sc_mm)
 
 
 
@@ -177,17 +178,19 @@ print("     Running starcode")
 print(" ")
 
 #get directories in files written in the step above
-all_sc_in = glob.glob(sc_in + "sc_in_*_comb.txt")
+all_sc_in = glob(sc_in + "sc_in_*_comb.txt")
 
 #for all the starcode input files run starcode
 for files in all_sc_in:
+    print("     file: " +  files)
     outpath = sc_out + "sc_output_" + files.split("/")[-1].split("sc_in_")[-1]
-    starcodeCommand = ['starcode', '-d', str(sc_mm), '-t', '20', '-i', files, '-o', outpath, '--seq-id']
+    starcodeCommand = [starcode_path + '/starcode', '-d', str(sc_mm), '-t', '20', '-i', files, '-o', outpath, '--seq-id']
     subprocess.call(starcodeCommand)
     sleep(1)
+    print(" ")
 
 #define paths of all sc outputs
-all_sc_out = glob.glob(sc_out + "sc_output*.txt")
+all_sc_out = glob(sc_out + "sc_output*.txt")
 
 #wait for starcode to finish
 while sum([empty(file) for file in all_sc_out]) > 0:
@@ -208,7 +211,7 @@ while sum([empty(file) for file in all_sc_out]) > 0:
 if barcodeSource == 'both' or barcodeSource == '10x':
 
     #get all Read2 fastq file paths after starcode for 10x
-    all_R2_10x_start_unfilt = glob.glob(filt_haveStart_10x + "/**/*_R2*.fastq", recursive = True)
+    all_R2_10x_start_unfilt = glob(filt_haveStart_10x + "/**/*_R2*.fastq", recursive = True)
     all_R2_10x_start_unfilt.sort()
 
     # Remove any Read2 fastq files that you dont care about
@@ -230,7 +233,7 @@ if barcodeSource == 'both' or barcodeSource == '10x':
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':  
     #get all Read1 fastq file paths after starcode for gDNA
-    all_R1_gDNA_start_unfilt = glob.glob(filt_haveStart_gDNA + "/**/*_R1*.fastq", recursive = True)
+    all_R1_gDNA_start_unfilt = glob(filt_haveStart_gDNA + "/**/*_R1*.fastq", recursive = True)
 
     # Remove any Read2 fastq files that you dont care about
     all_R1_gDNA_start_temp = [] 
@@ -248,7 +251,7 @@ if barcodeSource == 'both' or barcodeSource == 'gDNA':
     samples_R1_gDNA_start = list(set(samples_R1_gDNA_start))
     samples_R1_gDNA_start.sort()
 
-
+sleep(10)
 
 
 
@@ -260,6 +263,7 @@ if barcodeSource == 'both' or barcodeSource == 'gDNA':
 #--------------------------------------------------------------------------
 
 ### REPLACE ORGINAL SEQUENCES WITH MODIFIED SEQUENCES IN FASTQ FILES
+print(" ")
 print("     Modifying fastq files")
 print(" ")
 
@@ -270,7 +274,7 @@ for grp in GSAMP:
     for path in all_sc_out:
         if "/sc_output_group" + str(counter) +"_comb.txt" in path:
             scfile = path
-            print(scfile)
+
     counter = counter + 1
     
     #read in starcode file and make a list of its lines
@@ -375,11 +379,11 @@ with open(CellR + "FeatureReference.csv" , 'w+') as outfile:
 
 # If cDNA samples are used, filter
 if barcodeSource == 'both' or barcodeSource == '10x':
-    cDNA_10x_after_starcode(mod_R2,GSAMP,filt_WSN_10x)
+    cDNA_10x_after_starcode(mod_R2,GSAMP,filt_haveStart_10x,filt_WSN_10x)
 
 # If gDNA samples are used, filter
 if barcodeSource == 'both' or barcodeSource == 'cDNA':
-    gDNA_after_starcode(mod_R2,GSAMP,filt_WSN_gDNA)
+    gDNA_after_starcode(mod_R2,GSAMP,filt_haveStart_gDNA,filt_WSN_gDNA)
 
 
 
@@ -428,13 +432,13 @@ with open(CellR + "FeatureReference_filtered.csv" , 'w+') as outfile:
 
 if barcodeSource == 'both' or barcodeSource == '10x':
     #create fastq directory with all of the modified files for starcode
-    all_modR2 = glob.glob(filt_WSN_10x + "*_R2*.fastq", recursive = True)
+    all_modR2 = glob(filt_WSN_10x + "*_R2*.fastq", recursive = True)
 
     #get all the modified fastq files that were not R2 files
     all_nR2 = []
-    all_nR2.extend(glob.glob(filt_WSN_10x + "/**/*_R1*.fastq", recursive = True))
-    all_nR2.extend(glob.glob(filt_WSN_10x + "/**/*_I1*.fastq", recursive = True))
-    all_nR2.extend(glob.glob(filt_WSN_10x + "/**/*_I2*.fastq", recursive = True))
+    all_nR2.extend(glob(filt_WSN_10x + "/**/*_R1*.fastq", recursive = True))
+    all_nR2.extend(glob(filt_WSN_10x + "/**/*_I1*.fastq", recursive = True))
+    all_nR2.extend(glob(filt_WSN_10x + "/**/*_I2*.fastq", recursive = True))
 
     for sample in samples_R2_10x:
         sf = CellRfq + sample
@@ -494,15 +498,7 @@ for grp in GSAMP:
                 outfile.write("{}\t{}\n".format(bcseq, len(num_in_bounds)))
 
 
-
-
-
-#--------------------------------------------------------------------------
-## Remove old location for Cellranger input fastq files
-sleep(10)
-os.remove(filt_WSN_10x)
-
-
+                
 print("     Step 3 is done :D ")
 print(" ")
 
