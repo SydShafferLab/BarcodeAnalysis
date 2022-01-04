@@ -19,7 +19,7 @@ def LV_distance(num_of_barcodes_to_use, raw_seq_path, Outfolder):
     print("                   ...")
 
     #define new paths
-    LV_out = Outfolder + "/LV_distance/"
+    LV_out = Outfolder + "LV_distance/"
 
     # Make necessary folder
     os.mkdir(LV_out)

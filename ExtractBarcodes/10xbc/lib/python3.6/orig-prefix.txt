@@ -1,1 +1,0 @@
-/gpfs/fs02/apps/python/3.6.3

@@ -28,10 +28,9 @@ print(" ")
 
 
 # Find paths_and_variables.json file
-path_to_script = os.path.realpath(__file__)
+path_to_script = os.path.abspath(os.getcwd())
 
-path_to_script = '/'.join(path_to_script.split('/')[:-2])
-path = path = os.path.expanduser(path_to_script +"/paths_and_variables.json") 
+path = path = os.path.expanduser(path_to_script +"/paths_and_variables.json")
 
 
 # read paths_and_variables.json file
@@ -40,14 +39,14 @@ with open(path, 'r') as myfile:
 
 result_dict =  jstyleson.loads(data) # Raise Exception
 
-starcode_path=result_dict['starcode_path']    #path to starcode
+scripts=result_dict['scripts']   #path to scripts
 Fastqfolder10x=result_dict['Fastqfolder10x']  #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
 FastqfoldergDNA=result_dict['FastqfoldergDNA']#Folder that contains all folders containing gDNA FASTQ files generated from sequencing the barcodes.
 Outfolder= result_dict['Outfolder']           #folder you want outputs go go into (dont make this folder, this scipt will make it)
 strtseq= result_dict['strtseq']               #common sequence right before starcode starts
 barcodeSource = result_dict['barcodeSource']  #determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
-GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode 
-bclen = result_dict['bclen']           #length to keep from sequenced barcode 
+GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode
+bclen = result_dict['bclen']           #length to keep from sequenced barcode
 strtseq =  result_dict['strtseq']      #common sequence right before starcode starts
 strtseq_revcomp =  result_dict['strtseq_revcomp'] #rev_comp common sequence right before starcode starts
 startseqMatch =  result_dict['startseqMatch']     # The percentage match you for startseq to be called as correct in a barcode
@@ -88,7 +87,8 @@ if barcodeSource == 'both' or barcodeSource == 'gDNA':
 
 
 # Add starcode to PATH
-os.environ["PATH"] += starcode_path 
+starcode_path = scripts + '/starcode/'
+os.environ["PATH"] += starcode_path
 
 
 # Make any necessary files
@@ -135,7 +135,7 @@ if barcodeSource == 'both' or barcodeSource == '10x':
 
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':
- 
+
     gDNA_starcode_prep(FastqfoldergDNA,sc_in,GSAMP,bclen,filt_haveStart_gDNA,strtseq,startseqMatch,sc_mm)
 
 
@@ -215,7 +215,7 @@ if barcodeSource == 'both' or barcodeSource == '10x':
     all_R2_10x_start_unfilt.sort()
 
     # Remove any Read2 fastq files that you dont care about
-    all_R2_10x_start_temp = [] 
+    all_R2_10x_start_temp = []
     for grp in GSAMP:
         for smp in grp:
             if str(smp) in str(all_R2_10x_start_unfilt):
@@ -231,12 +231,12 @@ if barcodeSource == 'both' or barcodeSource == '10x':
     samples_R2_10x_start.sort()
 
 
-if barcodeSource == 'both' or barcodeSource == 'gDNA':  
+if barcodeSource == 'both' or barcodeSource == 'gDNA':
     #get all Read1 fastq file paths after starcode for gDNA
     all_R1_gDNA_start_unfilt = glob(filt_haveStart_gDNA + "/**/*_R1*.fastq", recursive = True)
 
     # Remove any Read2 fastq files that you dont care about
-    all_R1_gDNA_start_temp = [] 
+    all_R1_gDNA_start_temp = []
     for grp in GSAMP:
         for smp in grp:
             if str(smp) in str(all_R1_gDNA_start_unfilt):
@@ -276,7 +276,7 @@ for grp in GSAMP:
             scfile = path
 
     counter = counter + 1
-    
+
     #read in starcode file and make a list of its lines
     starcode_file = open(scfile, "r")
     sc_lines = starcode_file.readlines()
@@ -290,12 +290,12 @@ for grp in GSAMP:
             for path in all_R2_10x_start:
                 if "/"+ smp in path:
                     fastq_paths.append(path)
-        if barcodeSource == 'both' or barcodeSource == 'gDNA':     
+        if barcodeSource == 'both' or barcodeSource == 'gDNA':
             for path in all_R1_gDNA_start:
                 if "/"+ smp in path:
                     fastq_paths.append(path)
-                
-    
+
+
     #read in fastq files of given group of samples (concatenating all fastq files from same sample into one list)
     cat_fastq = []
     l_fastq = []
@@ -426,7 +426,7 @@ with open(CellR + "FeatureReference_filtered.csv" , 'w+') as outfile:
             sleep(0)
         else:
             outfile.write(line)
-        
+
         iters = iters+1
 
 
@@ -459,7 +459,7 @@ if barcodeSource == 'both' or barcodeSource == '10x':
 #--------------------------------------------------------------------------
 
 # Properly format the gDNA output files
-# Currently is output in --seq-id format which means the read (by numerical order) that goes into 
+# Currently is output in --seq-id format which means the read (by numerical order) that goes into
 #sequence is listed after
 
 count = 1
@@ -473,13 +473,13 @@ for grp in GSAMP:
     #read in starcode file and make a list of its lines
     starcode_file = open(scfile, "r")
     sc_lines = starcode_file.readlines()
-    
+
     ind_starts = []
     for i in l_fastq:
         ind_starts.append(i.split('|')[1])
     ind_starts = [(int(i)/4)+1 for i in ind_starts]
     ind_starts.append(len(cat_fastq)/4+1) # Have to add the one since starcode outputs are 1-based instead of 0-based
-    
+
     counter = -1
     for smp in grp:
         counter = counter+1
@@ -498,7 +498,6 @@ for grp in GSAMP:
                 outfile.write("{}\t{}\n".format(bcseq, len(num_in_bounds)))
 
 
-                
+
 print("     Step 3 is done :D ")
 print(" ")
-

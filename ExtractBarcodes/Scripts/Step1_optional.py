@@ -28,8 +28,7 @@ barcode_max_length = 70 #max length that can be inputed in starcode
 # Find paths_and_variables.json file
 path_to_script = os.path.abspath(os.getcwd())
 
-path_to_script = '/'.join(path_to_script.split('/')[:-1])
-path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json") 
+path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json")
 
 # read paths_and_variables.json file
 with open(path, 'r') as myfile:
@@ -43,12 +42,12 @@ FastqfoldergDNA=result_dict['FastqfoldergDNA']#Folder that contains all folders 
 Outfolder= result_dict['Outfolder']    #folder you want outputs go go into (dont make this folder, this scipt will make it)
 strtseq= result_dict['strtseq']        #common sequence right before starcode starts
 barcodeSource = result_dict['barcodeSource']    #determine whether the data has barcodes from 10x and gDNA "both" or only from 10x "10x"
-GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode 
-bclen = result_dict['bclen']           #length to keep from sequenced barcode 
+GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode
+bclen = result_dict['bclen']           #length to keep from sequenced barcode
 strtseq =  result_dict['strtseq']      #common sequence right before starcode starts
 strtseq_revcomp =  result_dict['strtseq_revcomp'] #rev_comp common sequence right before starcode starts
 startseqMatch =  result_dict['startseqMatch']# The percentage match you for startseq to be called as correct in a barcode
-sc_mm =  result_dict['sc_mm']  
+sc_mm =  result_dict['sc_mm']
 
 
 
@@ -78,7 +77,7 @@ raw_seq_not_comb = raw_seq + "not_combined/"
 qScore_path = Outfolder  + "/qScore/"
 qScore_comb = qScore_path + "combined"
 qScore_not_comb = qScore_path + "not_combined"
-# ADd starcode to PATH
+# Add starcode to PATH
 os.environ["PATH"] += os.pathsep + scripts + '/starcode/'
 
 # Make any necessary folders
@@ -178,9 +177,9 @@ if barcodeSource == 'both':
     #get all gDNA Read1 fastq file paths
     all_R1_gDNA_unfilt = glob.glob(FastqfoldergDNA + "/**/*_R1*.fastq", recursive = True)
     all_R1_gDNA_unfilt.sort()
-    
+
     # Remove any Read1 fastq files that you dont care about
-    all_R1_gDNA_temp = [] 
+    all_R1_gDNA_temp = []
     for grp in GSAMP:
         for smp in grp:
             if str(smp) in str(all_R1_gDNA_unfilt):
@@ -194,8 +193,8 @@ if barcodeSource == 'both':
         samples_R1_gDNA.append(paths.split("/")[-1].split("_L0")[0])
     samples_R1_gDNA = list(set(samples_R1_gDNA))
     samples_R1_gDNA.sort()
-    
-    
+
+
     #loop through all the Read 1 fastq files from gDNA (which contain barcode sequences) and write the textfile for starcode inputs
     readsKeep_gDNA = []
     counter = 0
@@ -237,7 +236,7 @@ if barcodeSource == 'both':
         bc_strt = statistics.mode(strt_ind)
 
         # modify sequences so that those that have a start sequence (where there can be erros) get replaces with a pefect start sequence, and get rid of stagger so that all sequence start with the perfect start sequences
-        modseq1 = seqs 
+        modseq1 = seqs
 
         #trim barcodes
         # variable: how long do you want your barcode
@@ -294,4 +293,3 @@ print("")
 print(' Done with Step 0 :D')
 
 print("")
-

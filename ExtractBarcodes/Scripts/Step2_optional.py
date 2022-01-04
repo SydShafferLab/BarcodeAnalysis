@@ -26,8 +26,7 @@ print(" ")
 # Find paths_and_variables.json file
 path_to_script = os.path.abspath(os.getcwd())
 
-path_to_script = '/'.join(path_to_script.split('/')[:-1])
-path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json") 
+path = path = os.path.expanduser(path_to_script + "/paths_and_variables.json")
 
 # read .json file
 with open(path, 'r') as myfile:
@@ -40,7 +39,7 @@ Fastqfolder10x=result_dict['Fastqfolder10x'] #Folder that contains all folders c
 FastqfoldergDNA=result_dict['FastqfoldergDNA'] #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
 Outfolder= result_dict['Outfolder']    #folder you want outputs go go into (dont make this folder, this scipt will make it)
 strtseq= result_dict['strtseq']        #common sequence right before starcode starts
-GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode 
+GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode
 num_of_barcodes_to_use= result_dict['num_of_barcodes_to_use']   # number of barcodes to use to calculate LV (2 random samplings are taken)
 
 
