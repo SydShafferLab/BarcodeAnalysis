@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import random
-from findpeaks import findpeaks
 import os
 
 def LV_distance(num_of_barcodes_to_use, raw_seq_path, Outfolder):
