@@ -5,13 +5,13 @@
 
 	//Path to starcode folder
     "starcode_path": "/home/raanreye/BarcodeAnalysis/starcode", 
-    
-    //Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
-    "Fastqfolder10x": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_cDNA_fastqs", 
 
-    //Folder that contains all folders containing gDNA FASTQ files generated from sequencing the barcodes. 
+    //Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
+    "Fastqfolder10x": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_cDNA_fastqs",
+
+    //Folder that contains all folders containing gDNA FASTQ files generated from sequencing the barcodes.
     //If you do not have corresponding gDNA sample, leave empty ("").
-    "FastqfoldergDNA": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_gDNA_fastqs", 
+    "FastqfoldergDNA": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_gDNA_fastqs",
 
     //Folder you want outputs go go into (dont make this folder, this scipt will make it)
     "Outfolder": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/Barcode_output_test_10x",
@@ -34,13 +34,12 @@
     "startseqMatch": 100,
 
     //Number of barcodes to use to calculate Levenshtein Distance (2 random samplings are taken)
-    "num_of_barcodes_to_use": 50000,
+    "num_of_barcodes_to_use": 500,
 
     //		     Sample names
     //Define which samples should be run together in starcode (any samples that could contain cells from the same lineage should be grouped together in a list within the GSAMP list)
 	//EXAMPLE: if you have samples : s1,s2,s3, and s4  and they all share lineage barcode enter [["s1","s2","s3","s4"]] if none should share lineages enter [["s1"],["s2"],["s3"],["s4"]]
 	//if s1 and s2 share lineage barcodes but none of the others do enter [["s1","s2"],["s3"],["s4"]]
-	//NOTE: names used here should match the names that will be assinged to samples in line 77-81 in this script (should be everythign befor lane (_L0))
+	//NOTE: names used here should match the names that will be assinged to samples in line 229 and 250 in the step3.py script (should be everythign befor lane (_L0))
 	"GSAMP":[["Test1_10xcDNA", "Test1_gDNA"],["Test2_10xcDNA", "Test2_gDNA"]],
 }
-

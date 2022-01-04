@@ -31,7 +31,7 @@ def LV_distance(num_of_barcodes_to_use, raw_seq_path, Outfolder):
 
              cell_barcodes = infile.readlines()
 
-        output_filename = LV_out +  grp.split('/')[-1] + '_LV_distance.pdf'
+        output_filename = LV_out +  grp.split('/')[-1].split('.txt')[0] + '_LV_distance.pdf'
         print("     Working on " + output_filename)
         print(" ")
         with PdfPages(output_filename) as pdf:
@@ -41,7 +41,7 @@ def LV_distance(num_of_barcodes_to_use, raw_seq_path, Outfolder):
                 cell_barcodes_chop = [x[0:barcode_length] for x in cell_barcodes]
 
                 # Initialize list
-                seq_rand_list = [] 
+                seq_rand_list = []
                 levenshtein_distances = []
 
                 # set a differnt random seed
@@ -57,7 +57,7 @@ def LV_distance(num_of_barcodes_to_use, raw_seq_path, Outfolder):
                             if j != i:
                                 levenshtein_distances.append(levenshtein(seq,seq_rand_list[i]))
 
-                # plot             
+                # plot
                 plot_f = plt.figure()
 
                 weights = np.ones_like(levenshtein_distances)/float(len(levenshtein_distances))
@@ -75,4 +75,4 @@ def LV_distance(num_of_barcodes_to_use, raw_seq_path, Outfolder):
 
                 # Save/close
                 pdf.savefig(plot_f)
-                plt.close()  
+                plt.close()
