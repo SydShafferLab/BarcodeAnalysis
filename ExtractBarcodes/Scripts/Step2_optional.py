@@ -34,12 +34,8 @@ with open(path, 'r') as myfile:
 
 result_dict =  jstyleson.loads(data) # Raise Exception
 
-scripts=result_dict['scripts']         #path to all barcode analyssi scripts
-Fastqfolder10x=result_dict['Fastqfolder10x'] #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
-FastqfoldergDNA=result_dict['FastqfoldergDNA'] #Folder that contains all folders containing FASTQ files generated from sequencing the barcodes
 Outfolder= result_dict['Outfolder']    #folder you want outputs go go into (dont make this folder, this scipt will make it)
 strtseq= result_dict['strtseq']        #common sequence right before starcode starts
-GSAMP= result_dict['GSAMP']            #Define which samples should be run together in starcode
 num_of_barcodes_to_use= result_dict['num_of_barcodes_to_use']   # number of barcodes to use to calculate LV (2 random samplings are taken)
 
 

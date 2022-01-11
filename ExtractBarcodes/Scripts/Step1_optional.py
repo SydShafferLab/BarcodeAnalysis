@@ -95,84 +95,84 @@ print("unzipped")
 
 
 #-------------------------------------10x--------------------------------------------
+if barcodeSource == 'both' or barcodeSource == '10x':
+    #get all Read2 fastq file paths
+    all_R2_10x  = []
+    for grp in GSAMP:
+            for smp in grp:
+                all_R2_10x.append(glob.glob(Fastqfolder10x + "/**/"  + smp + "*_R2*.fastq", recursive = True))
 
-#get all Read2 fastq file paths
-all_R2_10x  = []
-for grp in GSAMP:
-        for smp in grp:
-            all_R2_10x.append(glob.glob(Fastqfolder10x + "/**/"  + smp + "*_R2*.fastq", recursive = True))
+    all_R2_10x = [item for sublist in all_R2_10x for item in sublist]
 
-all_R2_10x = [item for sublist in all_R2_10x for item in sublist]
+    #define samples
+    samples = []
+    for paths in all_R2_10x:
+        samples.append(paths.split("/")[-1].split("_L0")[0])
+    samples = list(set(samples))
+    samples.sort()
 
-#define samples
-samples = []
-for paths in all_R2_10x:
-    samples.append(paths.split("/")[-1].split("_L0")[0])
-samples = list(set(samples))
-samples.sort()
-
-#loop through all the Read 2 fastq files (which contain barcode sequences)
-for sample in samples:
-    s_fastq = []
-    for path in all_R2_10x:
-        if "/"+ sample in path:
-            s_fastq.append(path)
-    #get the sequences in all the fastqs
-    #conatains all sequences for a sample
-    seqs = []
-    qscore = []
-    for fsmp in s_fastq:
-        for record in SeqIO.parse(fsmp, "fastq"):
-                seqs.append(str(record.seq))
-                qscore.append(str(record.letter_annotations["phred_quality"]))
+    #loop through all the Read 2 fastq files (which contain barcode sequences)
+    for sample in samples:
+        s_fastq = []
+        for path in all_R2_10x:
+            if "/"+ sample in path:
+                s_fastq.append(path)
+        #get the sequences in all the fastqs
+        #conatains all sequences for a sample
+        seqs = []
+        qscore = []
+        for fsmp in s_fastq:
+            for record in SeqIO.parse(fsmp, "fastq"):
+                    seqs.append(str(record.seq))
+                    qscore.append(str(record.letter_annotations["phred_quality"]))
 
 
-    #determine which seqeunces are actual barcodes by determining which start with the constant sequence before the barcode
+        #determine which seqeunces are actual barcodes by determining which start with the constant sequence before the barcode
 
-    # variables: the constant sequence before the barcode, percent match to call it a barcode (here it is 70)
+        # variables: the constant sequence before the barcode, percent match to call it a barcode (here it is 70)
 
-    # since we stagger priming sight, here we determine what the correct stagger is for a given fastq file
-    strt_ind = []
-    for lines in seqs:
-        c_ind = len(lines.split(strtseq)[0])
-        if c_ind < len(lines):
-            strt_ind.append(c_ind)
+        # since we stagger priming sight, here we determine what the correct stagger is for a given fastq file
+        strt_ind = []
+        for lines in seqs:
+            c_ind = len(lines.split(strtseq)[0])
+            if c_ind < len(lines):
+                strt_ind.append(c_ind)
 
-    bc_strt = statistics.mode(strt_ind)
+        bc_strt = statistics.mode(strt_ind)
 
-    # modify sequences so that those that have a start sequence (where there can be erros) get replaces with a pefect start sequence, and get rid of stagger so that all sequence start with the perfect start sequences
-    modseq1 = seqs
-    # for i in seqs:
-    #     modseq1.append(i)
+        # modify sequences so that those that have a start sequence (where there can be erros) get replaces with a pefect start sequence, and get rid of stagger so that all sequence start with the perfect start sequences
+        modseq1 = seqs
+        # for i in seqs:
+        #     modseq1.append(i)
 
-    #trim barcodes
-    # variable: how long do you want your barcode
-    sc_input = []
-    qscore_input = []
-    for i in modseq1:
-        sc_input.append(i[0:barcode_max_length+len(strtseq)])
+        #trim barcodes
+        # variable: how long do you want your barcode
+        sc_input = []
+        qscore_input = []
+        for i in modseq1:
+            sc_input.append(i[0:barcode_max_length+len(strtseq)])
 
-    #write files with these edited barcodes ( these are used as the input into starcode)
-    f = open(raw_seq_not_comb + "/" "raw_seq" + "_" + sample +".txt","w")
-    f.write('\n'.join(sc_input))
-    f.close()
+        #write files with these edited barcodes ( these are used as the input into starcode)
+        f = open(raw_seq_not_comb + "/" "raw_seq" + "_" + sample +".txt","w")
+        f.write('\n'.join(sc_input))
+        f.close()
 
-    qscore_input = []
-    for i in qscore:
-        qscore_i = str(json.loads(i)[0:barcode_max_length+len(strtseq)])
-        qscore_input.append(qscore_i)
+        qscore_input = []
+        for i in qscore:
+            qscore_i = str(json.loads(i)[0:barcode_max_length+len(strtseq)])
+            qscore_input.append(qscore_i)
 
-    #write files qscore
-    f = open(qScore_not_comb + "/" "qScore" + "_" + sample +".txt","w")
-    f.write('\n'.join(qscore_input))
-    f.close()
-    sleep(20)
+        #write files qscore
+        f = open(qScore_not_comb + "/" "qScore" + "_" + sample +".txt","w")
+        f.write('\n'.join(qscore_input))
+        f.close()
+        sleep(20)
 
 
 
 #-------------------------------------gDNA--------------------------------------------
 
-if barcodeSource == 'both':
+if barcodeSource == 'both' or barcodeSource == 'gDNA':
 
     #get all gDNA Read1 fastq file paths
     all_R1_gDNA_unfilt = glob.glob(FastqfoldergDNA + "/**/*_R1*.fastq", recursive = True)
@@ -261,10 +261,21 @@ if barcodeSource == 'both':
         sleep(20)
 
 
+
+
+
+
+
+
+
+
+count_path = 0
 # Get all of the files in the raw_seq folder and concatenate them
 for grp in GSAMP:
+
+    count_path = count_path+1
     count = 0
-    with open(raw_seq_comb + '/raw_seq_'+ "".join(grp) + '.txt', 'w') as outfile:
+    with open(raw_seq_comb + '/raw_seq_group'+ str(count_path) + '_comb.txt', 'w') as outfile:
         for smp in grp:
             smpf = (raw_seq_not_comb + "raw_seq_" + smp +".txt")
             with open(smpf) as infile:
