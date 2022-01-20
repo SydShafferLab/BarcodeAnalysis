@@ -85,11 +85,6 @@ path_to_folders = [Outfolder,raw_seq,raw_seq_comb,raw_seq_not_comb,qScore_path,q
 for path_to_folder in path_to_folders:
     does_folder_exist(path_to_folder)
 
-#unzip all files created b 10x for barcode runs
-gunzipCommand = ['gunzip', '-r', Fastqfolder10x]
-subprocess.call(gunzipCommand)
-print("unzipped")
-
 
 
 #-------------------------------------10x--------------------------------------------
@@ -99,6 +94,13 @@ subprocess.call(gunzipCommand)
 print("unzipped")
 
 if barcodeSource == 'both' or barcodeSource == '10x':
+
+    #unzip all files created b 10x for barcode runs
+    gunzipCommand = ['gunzip', '-r', Fastqfolder10x]
+    subprocess.call(gunzipCommand)
+    print("unzipped cDNA")
+
+
     #get all Read2 fastq file paths
     all_R2_10x  = []
     for grp in GSAMP:
@@ -180,6 +182,11 @@ subprocess.call(gunzipCommand)
 print("unzipped")
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':
+
+    #unzip all files
+    gunzipCommand = ['gunzip', '-r', FastqfoldergDNA]
+    subprocess.call(gunzipCommand)
+    print("unzipped gDNA")
 
     #get all gDNA Read1 fastq file paths
     all_R1_gDNA_unfilt = glob.glob(FastqfoldergDNA + "/**/*_R1*.fastq", recursive = True)
