@@ -88,11 +88,6 @@ for path_to_folder in path_to_folders:
 
 
 #-------------------------------------10x--------------------------------------------
-#unzip all files created b 10x for barcode runs
-gunzipCommand = ['gunzip', '-r', Fastqfolder10x]
-subprocess.call(gunzipCommand)
-print("unzipped")
-
 if barcodeSource == 'both' or barcodeSource == '10x':
 
     #unzip all files created b 10x for barcode runs
@@ -176,10 +171,6 @@ if barcodeSource == 'both' or barcodeSource == '10x':
 
 
 #-------------------------------------gDNA--------------------------------------------
-#unzip all files created b 10x for barcode runs
-gunzipCommand = ['gunzip', '-r', FastqfoldergDNA]
-subprocess.call(gunzipCommand)
-print("unzipped")
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':
 
