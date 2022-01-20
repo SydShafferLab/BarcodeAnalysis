@@ -4,18 +4,18 @@
     //              Paths
 
 	//Path to BarcodeAnalysis folder
-    "scripts": "/home/gharm/BarcodeAnalysis",
+    "scripts": "/Users/dylanschaff/Documents/GitHub/BarcodeAnalysis",
 
 		//Folder that contains all folders containing FASTQ files generated from sequencing the 10x barcodes
 		//If you do not have corresponding 10x sample, leave empty ("").
-    "Fastqfolder10x": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_cDNA_fastqs",
+    "Fastqfolder10x": "/Volumes/Super_cells/BarcodePipeline_TestData/test_cDNA_fastqs",
 
     //Folder that contains all folders containing gDNA FASTQ files generated from sequencing the barcodes.
     //If you do not have corresponding gDNA sample, leave empty ("").
-    "FastqfoldergDNA": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/test_gDNA_fastqs",
+    "FastqfoldergDNA": "/Volumes/Super_cells/BarcodePipeline_TestData/test_gDNA_fastqs",
 
     //Folder you want outputs go go into (dont make this folder, this scipt will make it)
-    "Outfolder": "/project/shafferslab/Raul/RAR035_SplitBarcode/BarcodePipeline_TestData/Barcode_output_test_10x",
+    "Outfolder": "/Users/dylanschaff/Desktop/test_qscore",
 
     //            Variables
     //Determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
@@ -42,5 +42,5 @@
 	//EXAMPLE: if you have samples : s1,s2,s3, and s4  and they all share lineage barcode enter [["s1","s2","s3","s4"]] if none should share lineages enter [["s1"],["s2"],["s3"],["s4"]]
 	//if s1 and s2 share lineage barcodes but none of the others do enter [["s1","s2"],["s3"],["s4"]]
 	//NOTE: names used here should match the names that will be assinged to samples in line 229 and 250 in the step3.py script (should be everything before lane (_L0))
-	"GSAMP":[["Test1_10xcDNA", "Test1_gDNA"],["Test2_10xcDNA", "Test2_gDNA"]],
+	"GSAMP":[["Test1_10xcDNA","Test1_gDNA"]],
 }

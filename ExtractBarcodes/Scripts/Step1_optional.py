@@ -1,5 +1,3 @@
-# Run this script by entering the 10xbc environment and then runing: python /path/to/PrepBarcodesForCellRanger.py
-
 
 import Bio
 from Bio import SeqIO
@@ -95,6 +93,11 @@ print("unzipped")
 
 
 #-------------------------------------10x--------------------------------------------
+#unzip all files created b 10x for barcode runs
+gunzipCommand = ['gunzip', '-r', Fastqfolder10x]
+subprocess.call(gunzipCommand)
+print("unzipped")
+
 if barcodeSource == 'both' or barcodeSource == '10x':
     #get all Read2 fastq file paths
     all_R2_10x  = []
@@ -171,6 +174,10 @@ if barcodeSource == 'both' or barcodeSource == '10x':
 
 
 #-------------------------------------gDNA--------------------------------------------
+#unzip all files created b 10x for barcode runs
+gunzipCommand = ['gunzip', '-r', FastqfoldergDNA]
+subprocess.call(gunzipCommand)
+print("unzipped")
 
 if barcodeSource == 'both' or barcodeSource == 'gDNA':
 
@@ -285,11 +292,13 @@ for grp in GSAMP:
                 if count < len(grp):
                     outfile.write("\n") # only add line if it is not the last sample
 
-
+count_path = 0
 # Get all of the files in the qScore folder and concatenate them
 for grp in GSAMP:
+
+    count_path = count_path+1
     count = 0
-    with open(qScore_comb + '/qScore_'+ "".join(grp) + '.txt', 'w') as outfile:
+    with open(qScore_comb + '/qScore_group'+ str(count_path) + '_comb.txt', 'w') as outfile:
         for smp in grp:
             smpf = (qScore_not_comb + "/" "qScore" + "_" + smp +".txt")
             with open(smpf) as infile:

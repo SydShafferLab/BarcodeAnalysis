@@ -1,5 +1,3 @@
-# Run this script by entering the 10xbc environment and then runing: python /path/to/PrepBarcodesForCellRanger.py
-
 import Bio
 from Bio import SeqIO
 from Bio.Seq import Seq
