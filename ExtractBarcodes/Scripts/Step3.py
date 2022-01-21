@@ -265,6 +265,7 @@ print(" ")
 print("     Modifying fastq files")
 print(" ")
 
+L_FASTQ =[]
 counter = 1
 for grp in GSAMP:
     count = 0
@@ -303,6 +304,8 @@ for grp in GSAMP:
         for line in fastq_file:
             cat_fastq.append(line)
 
+    #keep list of fastq files of all groups
+    L_FASTQ.append(l_fastq)
 
     for i in sc_lines:
         #get the barcode sequence in the line
@@ -467,6 +470,8 @@ for grp in GSAMP:
         if "/sc_output_group" + str(count) +"_comb.txt" in path:
             scfile = path
 
+    l_fastq = L_FASTQ[count - 1]
+
     count = count+1
     #read in starcode file and make a list of its lines
     starcode_file = open(scfile, "r")
@@ -499,3 +504,5 @@ for grp in GSAMP:
 
 print("     Step 3 is done :D ")
 print(" ")
+
+
