@@ -10,6 +10,7 @@ import json
 import warnings
 import pandas as pd
 import itertools
+import os
 
 
 
@@ -39,15 +40,13 @@ GSAMP= result_dict['GSAMP']            #Define which samples should be run toget
 spike_in_added= result_dict['spike_in_added']#"yes" = Spike-ins added "no" = Spike-ins not added
 spike_in_color= result_dict['spike_in_color']#List of colors for each spike-in
 spike_in_value= result_dict['spike_in_value']#List of number of cells for each spike-in
-
+spike_in_seqs=result_dict["spike_in_seqs"]   #Sequence of known spike-ins without startseq
+strtseq=result_dict["strtseq"]               #common sequence right before starcode starts
 
 #define any new paths
 barcode_quantify_folder =  Outfolder + "/barcode_quantify/"
 path_to_feature_ref =      Outfolder + "/CellRanger_inputs/" + "FeatureReference_filtered.csv" 
-path_to_sc_output_files = Outfolder + "/starcode_outputs/"+ "sc_output_counts__*.txt"
-
-# Add starcode to PATH
-os.environ["PATH"] += os.pathsep + scripts + '/starcode/'
+path_to_sc_output_files = Outfolder + "/starcode_outputs/sc_output_counts_*.txt"
 
 # Make any necessary folders
 path_to_folders = [barcode_quantify_folder]
@@ -76,10 +75,12 @@ for grp in GSAMP:
     subset_sc_output = []
     for smp in grp:
 
-    	hold_path = []
-    	for path in all_sc_output:
-    		if smp in path:                #is this true
-    			subset_sc_output.append(path)
+        hold_path = []
+        for path in all_sc_output:
+            print(path)
+            if smp in path:
+                subset_sc_output.append(path)
+                print(1)
 
 
     #------ Lets make the custom FeatureRef ------
@@ -88,21 +89,25 @@ for grp in GSAMP:
 
     for path in subset_sc_output:
 
+        # Load in sc_output
     	df_output = pd.read_csv(path,header = None, sep='\t', engine='python')
 
-    	df_output[0] = df_output [0].str[len(strtseq):]
+        # Remove startseq
+    	df_output[0] = df_output[0].str[len(strtseq):]
 
+        # Use a dictionary to find intersections faster
     	ind_dict_output = dict((k,i) for i,k in enumerate(df_output[0]))
     	inter = set(df_ref['sequence']).intersection(df_output[0])
     	indices_ref = [ ind_dict_ref[x] for x in inter ]
     	indices_out = [ ind_dict_output[x] for x in inter ]
 
+        # Determine what values belong to the current sc_output
     	hold_zero = [0]*len(df_ref['sequence'])
     	for x in inter:
     		hold_zero[ind_dict_ref[x]] = df_output[1][ind_dict_output[x] ] 
-
     	df_ref[path.split('/')[-1]] = hold_zero
 
+    # Save the values in a column with apropriate name
     counter += 1
     filepath = barcode_quantify_folder +  'FeatureReference_filtered_group'+ str(counter) + '_counts.csv'
     df_ref.to_csv(filepath)  
@@ -112,8 +117,6 @@ for grp in GSAMP:
 
 #---------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------
-
-
 
 
 
