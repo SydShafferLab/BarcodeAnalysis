@@ -40,8 +40,8 @@ GSAMP= result_dict['GSAMP']            #Define which samples should be run toget
 spike_in_added= result_dict['spike_in_added']#"yes" = Spike-ins added "no" = Spike-ins not added
 spike_in_color= result_dict['spike_in_color']#List of colors for each spike-in
 spike_in_value= result_dict['spike_in_value']#List of number of cells for each spike-in
-spike_in_seqs=result_dict["spike_in_seqs"]   #Sequence of known spike-ins without startseq
-strtseq=result_dict["strtseq"]               #common sequence right before starcode starts
+spike_in_seqs=result_dict["spike_in_seqs"]   #Sequence of known spike-ins without startseq 
+strtseq=result_dict["strtseq"]               #Common sequence right before starcode starts
 
 #define any new paths
 barcode_quantify_folder =  Outfolder + "/barcode_quantify/"
@@ -77,10 +77,9 @@ for grp in GSAMP:
 
         hold_path = []
         for path in all_sc_output:
-            print(path)
+            #Is the path one of the samples in group grp
             if smp in path:
                 subset_sc_output.append(path)
-                print(1)
 
 
     #------ Lets make the custom FeatureRef ------
@@ -167,6 +166,7 @@ for grp in GSAMP:
     print(" ")
 
     df_plot = df_ref.iloc[:,-len(grp)-1:]
+
     df_plot = df_plot.replace(0, np.nan, regex=True)
     df_plot = df_plot.replace(1, np.nan, regex=True)
 
@@ -177,7 +177,7 @@ for grp in GSAMP:
     #-------------------------Get all combinations--------------------------
     all_combinations = itertools.combinations([g for g in range(len(grp))],2)
 
-
+    print("             Plot:")
     #-----------------------------------------------------------------------
     #----------------------------Spike-ins ---------------------------------
     if spike_in_added== 'yes':
@@ -185,8 +185,8 @@ for grp in GSAMP:
         all_spike_in_color_in_grp = []
         all_spike_in_value_in_grp = []
         all_line_fit = []
+        summary_spike_in = []
 
-        print("             ")
         with PdfPages(path_to_group_folder + 'Spike_in_group'+ str(counter)+'.pdf') as pdf:
             for i in range(len(grp)):
 
@@ -198,14 +198,14 @@ for grp in GSAMP:
 
                 new_y =[]
                 new_col_y =[]
+
                 for n,m in enumerate(col_y):
                     if m in spike_in_color:
                         #Clean up any possibly lost barcodes
                         if np.isnan(y[n]) == False:
                             new_y.append(y[n])
                             new_col_y.append(m)
-
-
+                summary_spike_in.append(len(new_col_y))
 
                 #Make the order of spike-ins found the same as the spike_in_values
                 x = new_col_y
@@ -261,7 +261,8 @@ for grp in GSAMP:
 
     #------------------------------------------------------------------------------------
     #----------------------------Barplot-------------------------------------------------             
-    print("             Plot:")
+    summary_filter_in = []
+    print("             ")
     with PdfPages(path_to_group_folder + 'barplot_group'+ str(counter)+'.pdf') as pdf:
 
         
@@ -279,6 +280,7 @@ for grp in GSAMP:
                 if np.isnan(m) == False:
                     new_y.append(m)
                     new_col_y.append(col_y[x])
+            summary_filter_in.append(len(new_y))
 
             if spike_in_added == 'yes':
                 #Convert from RPM to Cells
@@ -385,7 +387,24 @@ for grp in GSAMP:
             pdf.savefig(plot_f);
             plt.close()
 
+    with open(path_to_group_folder+ 'summary_group'+ str(counter)+".txt","w") as write_file:
+        write_file.write("Summary for group"+ str(counter) + "\n")
+        write_file.write(" " + "\n")
 
+        if spike_in_added == 'yes':
+            write_file.write("Number of spike-ins added: ="+ "{:.2f}".format(len(spike_in_value)) + "\n")
+            for i,g in enumerate(grp):
+                write_file.write(g+ "\n")
+                write_file.write("      Number of spike-ins captured: = "  + "{:.2f}".format(summary_spike_in[i]) + "\n")
+                write_file.write("      Percentage of spike-ins captured: = %"  + "{:.2f}".format(100*summary_spike_in[i]/len(spike_in_value)) + "\n")
+            write_file.write(" " + "\n")
+
+        write_file.write("Total barcodes captured = %d" % len(df_ref.iloc[:,0]) + "\n")
+        for i,g in enumerate(grp):
+            write_file.write(g+ "\n")
+            write_file.write("      Barcodes with counts greater than 1: = "  + "{:.2f}".format(summary_filter_in[i]) + "\n")
+            write_file.write("      Percentage of barcodes with counts greater than 1: = %"  + "{:.2f}".format(100*summary_filter_in[i]/len(df_ref.iloc[:,0])) + "\n")
+        write_file.write(" " + "\n")
 
 
 print("     Done :D ")
