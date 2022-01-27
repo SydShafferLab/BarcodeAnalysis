@@ -15,7 +15,7 @@
     "FastqfoldergDNA": "/Volumes/Super_cells/BarcodePipeline_TestData/test_gDNA_fastqs",
 
     //Folder you want outputs go go into (dont make this folder, this scipt will make it)
-    "Outfolder": "/Users/dylanschaff/Desktop/test_qscore",
+    "Outfolder": "/Users/raul/Desktop",
 
     //            Variables
     //Determine whether the data has barcodes from 10x ("10x"), gDNA ("gDNA"), or both "both"
@@ -43,4 +43,27 @@
 	//if s1 and s2 share lineage barcodes but none of the others do enter [["s1","s2"],["s3"],["s4"]]
 	//NOTE: names used here should match the names that will be assinged to samples in line 229 and 250 in the step3.py script (should be everything before lane (_L0))
 	"GSAMP":[["Test1_10xcDNA","Test1_gDNA"]],
+
+
+    //              Spike-in
+    // Does you sample contain Spike-ins?
+    // "yes" = Spike-ins added "no" = Spike-ins not added
+    "spike_in_added": "yes",
+    // If "yes" fill out 'spike_in_seqs','spike_in_value' and 'spike_in_color'
+    // If "no" ignore 'spike_in_seqs','spike_in_value' and 'spike_in_color'
+
+    // The order of 'spike_in_seqs' has to match 'spike_in_value' and what ever color you picked for 'spike_in_color'
+
+    // Sequence of known spike-ins without startseq
+    "spike_in_seqs": ["TGGAGGTGAAGCTCCAGTTGCAGATCGACGACTAGGTCAAGATGAACTTCGAGCACTTGGACCTCCACGT",//1000
+                      "ATTCATGTTCTTGAAGGACATGATGGTGTTCTTGTACCTGTTGTACTACGACCTCATGATCGTCATCAAG",//1000
+                      "AGTTCGTCTACCTCATCTTGATGATGTTCAAGTAGGACGACGAGTAGCTCTACCAGGTGCAGATCGTGCA",//500
+                      "TGTAGATCTAGCTGATGTACGTGATCTTGGACATCTTCTTCATCCACCTCTTGATGAAGTACTACTTCAA",//500
+                      "ACCTGTAGATGTTCATGCTGTTCGAGTTGATGTTCTTGTTGCACAAGCACTACATGCTGTTGTACTTGGT",//50
+                      "ACCTCCTGGTGCTGTACATGCTCTAGATCTACGTGTTCTTGTAGCTCTTCGTGTACATGCTGGTGGAGAT"],//50
+    // Number of cells added per spike-in
+    "spike_in_value": [1000,1000,500,500,50,50],
+    // Color assigned to each spike-in
+    "spike_in_color": ["r","r","y","y","b","b"],
+
 }

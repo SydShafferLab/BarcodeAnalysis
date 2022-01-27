@@ -13,3 +13,5 @@ jstyleson==0.0.2
 polyleven==0.7
 glob2==0.7
 matplotlib-venn==0.11.6
+pandas==1.1.4
+more-itertools==8.6.0
