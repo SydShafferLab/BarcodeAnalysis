@@ -297,15 +297,19 @@ for grp in GSAMP:
             plt.suptitle('Group'+ str(counter), y=0.99);
             plt.title(grp[i])
             plt.xlabel('Barcodes')
-            plt.ylabel('Cells')
+            if spike_in_added == 'yes':
+            
 
             if spike_in_added == 'yes':
+                plt.ylabel('Cells')
                 new_spike_in_color = all_spike_in_color_in_grp[i]
                 new_spike_in_value = all_spike_in_value_in_grp[i]
 
                 for c,cop in enumerate(new_spike_in_color):
                     plt.plot([], [], '.'+cop, label=new_spike_in_value[c] )
                 plt.legend(title="Spike-ins",bbox_to_anchor=(1.05, 1.0), loc='upper left')
+            else:
+                plt.ylabel('RPM')
 
             plt.tight_layout()
 
@@ -369,17 +373,20 @@ for grp in GSAMP:
             plt.plot(x_fit,y_fit,'-',color = 'k', alpha=0.2)
             plt.suptitle('Group'+ str(counter), y=0.99);
             plt.title(grp[combination[0]] + " and " + grp[combination[1]])
-            plt.xlabel(grp[combination[0]] + '[Cells]')
-            plt.ylabel(grp[combination[1]] + '[Cells]')
 
             fit_name = "R^2=" +"{:.2f}".format(r_squared) + "     slope=" + "{:.2f}".format(slope)+ "     y-intercept=" + "{:.2f}".format(intercept)
 
             plt.text(0,np.max(new_y),fit_name)
 
             if spike_in_added == 'yes':
+                plt.xlabel(grp[combination[0]] + ' [Cells]')
+                plt.ylabel(grp[combination[1]] + ' [Cells]')
                 for c,cop in enumerate(spike_in_color ):
                     plt.plot([], [], '.'+cop, label=spike_in_value[c])
                 plt.legend(title="Spike-ins",bbox_to_anchor=(1.05, 1.0), loc='upper left')
+            else:
+                plt.xlabel(grp[combination[0]] + ' [RPM]')
+                plt.ylabel(grp[combination[1]] + ' [RPM]')
 
             plt.tight_layout()
 
